@@ -387,3 +387,31 @@ body .tip{
 /* Botón música a la derecha del footer */
 body .foot{ justify-content:flex-end !important; }
 body .foot .btn#mute{ margin-left:auto !important; }
+
+/* ==== OVERRIDES FINALES (poner AL FINAL del archivo) ==== */
+
+/* Stats más arriba + interactivas */
+html body .stats{
+  bottom:110px !important;        /* subidas */
+  pointer-events:auto !important;  /* re-activa hover/click */
+  z-index: 6 !important;           /* por debajo del perfil */
+}
+html body .stats .stat{
+  pointer-events:auto !important;
+}
+
+/* Tips: el contenedor NO bloquea clics de lo de arriba */
+html body .tips{ pointer-events:none !important; }
+html body .tip{  pointer-events:auto  !important; }
+
+/* Perfil/Steam SIEMPRE por encima de las stats */
+html body .player-card{
+  z-index: 999 !important;
+}
+
+/* ¡Bienvenid@! entre perfil y stats */
+html body .welcome{
+  bottom:110px !important;
+  z-index: 998 !important;
+}
+
