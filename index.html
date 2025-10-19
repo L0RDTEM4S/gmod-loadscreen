@@ -5,23 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Loadscreen</title>
 
-  <!-- CSS relativo (sirve en Pages y en GMod) -->
-  <link rel="stylesheet" href="/style.css?v=web1" />
+  <!-- CSS local (mismo repo) -->
+  <link rel="stylesheet" href="./style.css?v=web1" />
 </head>
 <body>
   <!-- Fondo + overlay -->
   <div id="bg"></div>
+  <canvas id="fx"></canvas>
   <div class="overlay"></div>
 
-  <!-- FX opcionales (partículas + viñeta) -->
-  <canvas id="fx"></canvas>
-  <div class="vignette"></div>
-
-  <main class="wrap">
-    <!-- Header / marca -->
-    <header class="top">
-      <div class="brand card">
-        <img id="logo" src="/materials/loadscreen/logo.png" alt="logo" />
+  <!-- Contenido -->
+  <div class="wrap">
+    <!-- TOP / Marca -->
+    <header class="top card">
+      <div class="brand">
+        <img id="logo" alt="logo" />
         <div class="titles">
           <h1 id="title">Quantum Pulse</h1>
           <p id="subtitle">Gamemode: —</p>
@@ -29,50 +27,82 @@
       </div>
     </header>
 
-    <!-- Centro: barra + textos -->
+    <!-- CENTER -->
     <section class="center">
+      <p id="loading" class="loading">Conectando con el servidor…</p>
+
+      <!-- barra de progreso -->
       <div class="progress card" aria-label="Progreso">
         <i id="bar"></i>
         <span id="pct" class="pct">0%</span>
       </div>
-      <p class="loading" id="loading">CARGANDO…</p>
-      <p class="welcome" id="welcome">¡Bienvenid@!</p>
+
+      <!-- tarjeta de jugador -->
+      <div class="player-card card">
+        <img id="avatar" class="avatar" alt="avatar" />
+        <div class="pc-info">
+          <div class="hi">Hola de nuevo</div>
+          <div id="pc-nick" class="nick">Jugador</div>
+          <div id="pc-sid" class="sid">SteamID</div>
+        </div>
+      </div>
+
+      <!-- mensaje de bienvenida (entre perfil y stats) -->
+      <h2 class="welcome">¡Bienvenid@!</h2>
     </section>
 
-    <!-- Perfil jugador -->
-    <section class="player-card card" id="pcard">
-      <img class="avatar" id="avatar" alt="avatar" />
-      <div class="pc-info">
-        <div class="hi">Hola de nuevo</div>
-        <div class="nick" id="pc-nick">Jugador</div>
-        <div class="sid" id="pc-sid">SteamID</div>
+    <!-- STATS (abajo, chips) -->
+    <section class="stats" id="stats">
+      <div class="stat card">
+        <span class="ic">⚡</span>
+        <div class="kv">
+          <div class="k">DINERO</div>
+          <div id="st-money" class="v">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <span class="ic">🏵️</span>
+        <div class="kv">
+          <div class="k">TIEMPO</div>
+          <div id="st-time" class="v">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <span class="ic">⭐</span>
+        <div class="kv">
+          <div class="k">RANGO / JOB</div>
+          <div id="st-rank" class="v">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <span class="ic">📘</span>
+        <div class="kv">
+          <div class="k">MAPA</div>
+          <div id="st-map" class="v">—</div>
+        </div>
       </div>
     </section>
 
-    <!-- Stats abajo (chips) -->
-    <section class="stats">
-      <div class="stat card"><div class="ic">⚡</div><div class="kv"><div class="k">DINERO</div><div class="v" id="st-money">—</div></div></div>
-      <div class="stat card"><div class="ic">⏱️</div><div class="kv"><div class="k">TIEMPO</div><div class="v" id="st-time">—</div></div></div>
-      <div class="stat card"><div class="ic">⭐</div><div class="kv"><div class="k">RANGO / JOB</div><div class="v" id="st-rank">—</div></div></div>
-      <div class="stat card"><div class="ic">🗺️</div><div class="kv"><div class="k">MAPA</div><div class="v" id="st-map">—</div></div></div>
-    </section>
-
-    <!-- Footer: tips + botón música -->
+    <!-- FOOTER / tips + botón música -->
     <footer class="foot">
       <div class="tips" id="tips"></div>
       <button class="btn" id="mute">🔊 Música</button>
     </footer>
-  </main>
+  </div>
 
-  <!-- Audio (en Pages usamos /sound/... ; en GMod JS puede sobreescribir asset://) -->
-  <audio id="bgm" preload="auto" src="/sound/loadscreen/music.ogg"></audio>
+  <!-- Audio (en GMod usa asset:// vía app.js; en web podés poner un .ogg local si querés) -->
+  <audio id="bgm" preload="auto"></audio>
 
-  <!-- JS relativo -->
-  <script src="/app.js?v=web1" defer></script>
+  <!-- JS local (mismo repo) -->
+  <script src="./app.js?v=web1" defer></script>
 
-  <!-- En juego gmod llama gmod.Ready(); en web no existe → no pasa nada -->
+  <!-- Shim: si existe gmod.Ready() lo llamamos; en web no hace nada malo -->
   <script>
-    if (window.gmod && typeof gmod.Ready === 'function') gmod.Ready();
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.gmod && typeof gmod.Ready === 'function') {
+        try { gmod.Ready(); } catch (e) {}
+      }
+    });
   </script>
 </body>
 </html>
