@@ -24,9 +24,9 @@ var CONFIG = {
 
   // Fondos: primero intentará Imgur; si falla, prueba local de GMod
   slides: [
-    [ withBust('https://i.imgur.com/NJgNA32.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://i.imgur.com/0RgiH9t.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://i.imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ]
+    [ withBust('https://imgur.com/GJKhdJk.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
+    [ withBust('https://imgur.com/0RgiH9t.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
+    [ withBust('https://imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ]
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -356,3 +356,4 @@ window.onAvatar = function(url){
   }
   step();
 })();
+
