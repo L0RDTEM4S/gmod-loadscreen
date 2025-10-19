@@ -6,517 +6,227 @@
 }
 
 /* ====== Reset & base ====== */
-*{box-sizing:border-box}
-html,body{height:100%}
-
-/* 🎨 EDITÁ AQUÍ PALETA / INTENSIDADES GLOBALES */
-:root{
-  --accent:#ffffff;    /* Color principal (barra, acentos) */
-  --accent2:#ffffff;   /* Degradé secundario */
-  --bg1:#0b0f14;       /* Fondo base */
-  --glass:rgba(15,22,32,.55);
-  --glass2:rgba(15,22,32,.78);
-  --blur:18px;         /* Intensidad del blur en tarjetas */
-  --shadow:0 12px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
-  --fade:1100ms;       /* Duración del crossfade de fondos */
-}
-
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
 body{
-  margin:0; background:var(--bg1); color:#eaf2ff;
+  margin:0;
+  background:#0b0f14;
+  color:#eaf2ff;
   font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
   overflow:hidden;
 }
 
-/* ===== Background ===== */
-#bg{position:fixed;inset:0;z-index:0}
-.bg-slide{position:absolute;inset:0;background-size:cover;background-position:center;
-  opacity:0;transition:opacity var(--fade) ease}
-.bg-slide.active{opacity:1}
-.bg-slide.kenburns{animation:kb 20s ease-in-out infinite}
-@keyframes kb{0%{transform:scale(1)}50%{transform:scale(1.08) translate(2%,-2%)}100%{transform:scale(1)}}
+/* ====== Paleta global ====== */
+:root{
+  --accent:#39b4ff;
+  --accent2:#9ee8ff;
+  --glass:rgba(15,22,32,.78);
+  --blur:18px;
+  --shadow:0 12px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
+  --fade:1100ms;
 
-.overlay{position:fixed;inset:0;z-index:1;
-  background:radial-gradient(circle at 25% -10%,rgba(57,180,255,.18),transparent 40%),
-             linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.6) 70%)}
-
-/* ===== Layout ===== */
-.wrap{position:relative;z-index:2;height:100%;display:grid;grid-template-rows:auto 1fr auto auto;gap:14px}
-.card{background:var(--glass2);backdrop-filter:blur(var(--blur));border-radius:20px;box-shadow:var(--shadow)}
-
-.top{display:flex;align-items:center;justify-content:center;padding:20px}
-.brand{display:flex;align-items:center;gap:16px;padding:12px 16px}
-.brand img{width:60px;height:60px;border-radius:16px;box-shadow:var(--shadow)}
-.titles h1{margin:0;font-size:28px;letter-spacing:.6px;font-family:'MontserratX',Inter,system-ui}
-.titles p{margin:2px 0 0;font-size:14px;color:#b9c6d8}
-
-/* ===== Center ===== */
-.center{display:grid;place-items:center;gap:18px}
-
-/* Barra de carga PRO (calidad mejorada) */
-.progress{width:min(1000px,88vw);height:18px;position:relative;border-radius:999px;
-  background:rgba(255,255,255,.06);
-  box-shadow:var(--shadow), inset 0 6px 18px rgba(0,0,0,.35)}
-.progress::after{/* brillo superior sutil */
-  content:"";position:absolute;left:8px;right:8px;top:2px;height:6px;border-radius:999px;
-  background:linear-gradient(to bottom,rgba(255,255,255,.35),rgba(255,255,255,0));
-  pointer-events:none
-}
-.progress>i{display:block;height:100%;width:0;border-radius:999px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  box-shadow:0 0 22px rgba(57,180,255,.6), inset 0 -4px 10px rgba(0,0,0,.25);
-  position:relative;overflow:hidden}
-.progress>i:before{/* rayas suaves */
-  content:"";position:absolute;inset:0;background:
-    repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 10px,transparent 10px 20px);
-  mix-blend-mode:overlay;opacity:.25;animation:stripes 1.2s linear infinite
-}
-@keyframes stripes{to{transform:translateX(20px)}}
-
-/* Porcentaje centrado en la barra */
-.pct{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:14px;
-  letter-spacing:.6px; color:#eaf2ff; opacity:.9;
-  text-shadow:0 4px 16px rgba(0,0,0,.5); pointer-events:none;
+  /* Barra neón (puedes cambiar colores vivos aquí) */
+  --barW: min(860px, 72vw);
+  --barH: 18px;
+  --barR: 14px;
+  --c1:#00F0FF; /* cian */
+  --c2:#9E00FF; /* violeta */
+  --c3:#FF007A; /* magenta */
+  --track: rgba(255,255,255,.08);
+  --trackBorder: rgba(255,255,255,.12);
+  --pct: #ffffff;
 }
 
-.loading{margin:0;font-size:20px;letter-spacing:1.2px;
-  font-family:'MontserratX',Inter,system-ui;text-shadow:0 6px 26px rgba(0,0,0,.6)}
-.welcome{margin:0;font-size:28px;font-weight:800;font-family:'MontserratX',Inter,system-ui;
-  text-shadow:0 10px 30px rgba(0,0,0,.65)}
-
-/* ===== Player card ===== */
-.player-card{justify-self:center;display:flex;align-items:center;gap:16px;padding:12px 16px;max-width:min(720px,92vw)}
-.player-card .avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;box-shadow:var(--shadow)}
-.pc-info .hi{color:#9fbed6;font-size:12px}
-.pc-info .nick{font-weight:800;font-size:20px;letter-spacing:.3px;font-family:'MontserratX',Inter,system-ui}
-.pc-info .sid{color:#9fbed6;font-size:12px}
-
-/* ===== Stats ===== */
-.stats{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:14px;width:min(1200px,94vw);margin:0 auto}
-.stat{display:flex;align-items:center;gap:12px;padding:14px 16px}
-.stat .ic{font-size:22px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
-.stat .k{font-size:11px;color:#a7b8c9;letter-spacing:.6px}
-.stat .v{font-size:17px;font-weight:800}
-
-/* ===== Footer ===== */
-.foot{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 20px}
-.tips{display:flex;gap:10px;flex-wrap:wrap}
-.tip{background:rgba(255,255,255,.06);padding:8px 12px;border-radius:999px;white-space:nowrap}
-.btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:800;
-  background:var(--glass2);color:#eaf2ff;box-shadow:var(--shadow);cursor:pointer}
-.btn:hover{outline:2px solid rgba(155,226,255,.28)}
-
-/* Aviso de música bloqueada (autoplay) */
-.audio-hint{
-  position:fixed; right:16px; bottom:16px; z-index:5;
-  background:var(--glass2); backdrop-filter:blur(var(--blur));
-  border-radius:999px; padding:10px 14px; box-shadow:var(--shadow);
-  font-size:13px; color:#eaf2ff;
-}
-
-@media (max-width: 980px){.stats{grid-template-columns:1fr 1fr}}
-@media (max-width: 560px){.titles h1{font-size:22px}.stats{grid-template-columns:1fr}}
-
-/* ===== Audio Gate (overlay grande) ===== */
-.audio-gate{
-  position:fixed; inset:0; z-index:9; display:grid; place-items:center;
-  background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
-  backdrop-filter: blur(6px);
-}
-.gate-card{
-  background:var(--glass2); box-shadow:var(--shadow); border-radius:22px;
-  padding:24px 22px; width:min(520px,92vw); text-align:center;
-}
-.gate-title{
-  font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:28px; margin-bottom:6px;
-}
-.gate-sub{ color:#b9c6d8; font-size:14px; margin-bottom:16px; }
-.gate-btn{ font-size:16px; padding:12px 18px; }
-
-
-/* === BG slideshow (apéndice mínimo; no rompe tu layout) === */
-.bg-slide{
-  position:absolute; inset:-2% -2%;
-  background-size:cover; background-position:center;
-  opacity:0; transition:opacity var(--fade,1100ms) ease-in-out, transform 9s ease-in-out;
-  filter:saturate(1.05) contrast(1.02) brightness(1.02);
-  transform:scale(1.02);
-}
-.bg-slide.active{ opacity:1; transform:scale(1.03); }
-.bg-slide.kenburns{ animation:kb 26s ease-in-out infinite; }
-@keyframes kb { 0%{transform:scale(1.03)} 100%{transform:scale(1.05)} }
-
-/* --- FX sutiles (aditivos) --- */
-#fx{
-  position:fixed; inset:0; z-index:0;
-  pointer-events:none; opacity:.35; /* discreto */
-}
-.vignette{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:
-    radial-gradient(1200px 800px at 10% 10%, rgba(57,180,255,.08), transparent 60%),
-    radial-gradient(1200px 800px at 90% 90%, rgba(255,255,255,.05), transparent 60%),
-    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,.45) 100%);
-  mix-blend-mode: screen;
-}
-
-
-/* === Soporte slideshow y FX (aditivo, no rompe tu estilo) === */
+/* ====== Background / slideshow / FX ====== */
 #bg{ position:fixed; inset:0; z-index:0; overflow:hidden; }
 .bg-slide{
   position:absolute; inset:-2% -2%;
   background-size:cover; background-position:center;
-  opacity:0; transition:opacity var(--fade,1100ms) ease-in-out, transform 9s ease-in-out;
+  opacity:0; transform:scale(1.02);
+  transition: opacity var(--fade) ease-in-out, transform 9s ease-in-out;
   filter:saturate(1.05) contrast(1.02) brightness(1.02);
-  transform:scale(1.02);
 }
 .bg-slide.active{ opacity:1; transform:scale(1.03); }
 .bg-slide.kenburns{ animation:kb 26s ease-in-out infinite; }
-@keyframes kb { 0%{transform:scale(1.03)} 100%{transform:scale(1.05)} }
+@keyframes kb{ 0%{transform:scale(1.03)} 100%{transform:scale(1.05)} }
 
-#fx{
-  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.40;
-}
-.vignette{
+.overlay{
   position:fixed; inset:0; z-index:1; pointer-events:none;
   background:
-    radial-gradient(1200px 800px at 10% 10%, rgba(57,180,255,.08), transparent 60%),
-    radial-gradient(1200px 800px at 90% 90%, rgba(255,255,255,.05), transparent 60%),
-    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,.45) 100%);
-  mix-blend-mode: screen;
+    radial-gradient(circle at 25% -10%, rgba(57,180,255,.18), transparent 40%),
+    linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,.6) 70%);
 }
-/* Aseguramos orden de capas con tu overlay y UI existente */
-.overlay{ z-index:2; }
-.wrap{ position:relative; z-index:3; }
+#fx{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.35; }
 
-#bg{
-  position: fixed; top:0; right:0; bottom:0; left:0;
-  z-index: 0; overflow: hidden;
-}
-.bg-slide{
-  position: absolute; top:-2%; left:-2%; right:-2%; bottom:-2%;
-  background-size: cover; background-position: center;
-  opacity: 0; transform: scale(1.02);
-  transition: opacity var(--fade,1100ms) ease-in-out, transform 9s ease-in-out;
-}
-.bg-slide.active{ opacity: 1; transform: scale(1.03); }
-.overlay{ position: fixed; top:0; right:0; bottom:0; left:0; z-index:2; background: rgba(8,12,17,.55); pointer-events:none; }
-.wrap{ position: relative; z-index: 3; }
+/* ====== Layout base ====== */
+.wrap{ position:relative; z-index:2; height:100%;
+  display:grid; grid-template-rows:auto 1fr auto auto; gap:14px; }
+.card{ background:var(--glass); backdrop-filter:blur(var(--blur)); border-radius:20px; box-shadow:var(--shadow); }
 
-#title{
-  text-shadow: 0 2px 10px rgba(0,0,0,.55), 0 0 14px rgba(57,180,255,.25);
-}
+.top{ display:flex; align-items:center; justify-content:center; padding:20px; }
+.brand{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
+.brand img{ width:60px; height:60px; border-radius:16px; box-shadow:var(--shadow); }
+.titles h1{ margin:0; font-size:28px; letter-spacing:.6px; font-family:'MontserratX',Inter,system-ui; }
+.titles p{ margin:2px 0 0; font-size:14px; color:#b9c6d8; }
 
-/* ===== PROGRESS BAR — NEON VIBRANTE, CENTRADA ===== */
-:root{
-  --barW: min(860px, 72vw);
-  --barH: 18px;            /* cambia a 16/20 si la querés más fina/grande */
-  --barR: 14px;
+.center{ display:grid; place-items:center; gap:18px; }
 
-  /* 🎨 Paleta viva (puedes cambiarla) */
-  --c1: hsl(0, 0%, 100%);           /* cian neon */
-  --c2: #ffffff;           /* violeta neon */
-  --c3: #000000;           /* magenta punch */
-
-  --track: rgba(255,255,255,.08);/* vidrio del track */
-  --trackBorder: rgba(255,255,255,.12);
-  --pct: #ffffff;          /* % amarillo */
-}
-
-/* Centrar la sección en la pantalla */
+/* ====== Barra de progreso (neón, centrada) ====== */
 section.center{
-  position: fixed !important;
-  left: 50% !important;
-  top: 40vh !important;      /* súbelo/bájalo cambiando este valor */
-  transform: translate(-50%, -50%) !important;
+  position: fixed;
+  left: 50%;
+  top: 40vh;
+  transform: translate(-50%, -50%);
   width: var(--barW);
   display: flex; flex-direction: column; gap: 12px;
   align-items: stretch; z-index: 3;
 }
-
-/* “Conectando…” arriba, Montserrat */
 section.center .loading{
   text-align:center;
-  font-family:"MontserratX", Arial, sans-serif !important;
+  font-family:'MontserratX', Arial, sans-serif;
   font-weight:700; letter-spacing:.3px;
   color: rgba(255,255,255,.95);
+  margin:0;
 }
-
-/* Pista de vidrio (track) */
-section.center .progress[aria-label="Progreso"]{
+.progress{
   position:relative; width:100%; height:var(--barH);
   border-radius:var(--barR); overflow:hidden;
-  background: var(--track) !important;
-  border: 1px solid var(--trackBorder) !important;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 8px 22px rgba(0,0,0,.32) !important;
+  background: var(--track);
+  border: 1px solid var(--trackBorder);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 8px 22px rgba(0,0,0,.32);
   backdrop-filter: blur(7px) saturate(120%);
 }
-
-/* textura del track, sutil */
-section.center .progress[aria-label="Progreso"]::before{
+.progress::before{
   content:""; position:absolute; inset:0;
   background:
     linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)),
     repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 10px);
   pointer-events:none;
 }
-
-/* BARRA de avance: degradé neon animado + brillo */
-section.center .progress[aria-label="Progreso"] i#bar{
+.progress i#bar{
   position:absolute; left:0; top:0; bottom:0; width:0%;
   border-radius:var(--barR);
   background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c1));
   background-size: 300% 100%;
   animation: neonFlow 6s linear infinite;
+  /* fallback shadows + soportes modernos */
   box-shadow:
-    0 0 14px color-mix(in srgb, var(--c1) 35%, transparent),
-    0 0 28px color-mix(in srgb, var(--c2) 25%, transparent),
-    0 0 42px color-mix(in srgb, var(--c3) 18%, transparent);
-  border-top:none !important;         /* adiós línea blanca */
-  will-change: width; transform: translateZ(0);
-  transition: width 130ms linear;     /* avance fluido sin tirones */
+    0 0 14px rgba(0,240,255,.35),
+    0 0 28px rgba(158,0,255,.25),
+    0 0 42px rgba(255,0,122,.18);
+  transition: width 130ms linear;
 }
-
-/* rayo/shimmer diagonal (sutil) */
-section.center .progress[aria-label="Progreso"] i#bar::after{
+@keyframes neonFlow{ 0%{background-position:0% 0} 100%{background-position:300% 0} }
+.progress i#bar::after{
   content:""; position:absolute; inset:-40% -10%;
-  background:
-    linear-gradient(120deg,
-      transparent 0%,
-      rgba(255,255,255,.28) 45%,
-      transparent 70%);
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.28) 45%, transparent 70%);
   transform: translateX(-140%) rotate(0.001deg);
   animation: sweep 2.3s ease-in-out infinite;
-  mix-blend-mode: screen;
-  pointer-events:none;
+  mix-blend-mode: screen; pointer-events:none;
 }
+@keyframes sweep{ 0%{transform:translateX(-140%) rotate(0.001deg)} 100%{transform:translateX(140%) rotate(0.001deg)} }
 
-/* % a la derecha, grande, Montserrat bold */
-section.center .progress[aria-label="Progreso"] .pct{
+.pct{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-end;
-  padding-right: 12px;
-  font-family:"MontserratX", Arial, sans-serif !important;
-  font-weight:800; font-size:1.1rem; letter-spacing:.4px;
-  color: var(--pct); text-shadow: 0 1px 2px rgba(0,0,0,.6);
+  padding-right:12px;
+  font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:1.1rem;
+  letter-spacing:.4px; color:var(--pct); text-shadow:0 1px 2px rgba(0,0,0,.6);
   pointer-events:none;
 }
 
-/* micro “latido” del número (si el JS agrega la clase) */
-section.center .progress[aria-label="Progreso"] .pct{ transition: transform 180ms ease; }
-section.center .progress[aria-label="Progreso"] .pct.bump{ transform: scale(1.06); }
-
-/* animaciones */
-@keyframes neonFlow{
-  0% { background-position: 0% 0; }
-  100%{ background-position: 300% 0; }
-}
-@keyframes sweep{
-  0% { transform: translateX(-140%) rotate(0.001deg); }
-  100%{ transform: translateX(140%)  rotate(0.001deg); }
-}
-
-/* ================= HOTFIX: columnas gigantes ================= */
-
-/* Las stats NO deben estirarse en vertical */
-.stats{
-  position: static;                 /* o el que ya tenías, no fixed */
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  gap: 14px !important;
-  width: 100% !important;
-  max-width: 1200px;
-  margin: 0 auto;                   /* centradas */
-  z-index: 4;
-}
-
-/* Cada stat como chip compacto */
-.stats .stat{
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-
-  height: auto !important;
-  min-height: 0 !important;
-  max-height: none !important;
-
-  padding: 10px 14px !important;
-  border-radius: 14px !important;
-
-  background: rgba(18,24,33,.65) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 8px 18px rgba(0,0,0,.28) !important;
-  backdrop-filter: blur(8px) saturate(120%) !important;
-
-  overflow: hidden !important;
-}
-
-/* Apagar decoraciones heredadas de .card que puedan “inflar” */
-.stats .stat.card::before,
-.stats .stat.card::after,
-.stats .stat::before,
-.stats .stat::after{
-  content: none !important;
-  display: none !important;
-}
-
-/* Icono + texto internos siguen compactos */
-.stats .stat .ic{ font-size: 1rem; opacity:.9; }
-.stats .stat .kv .k{ opacity:.8; font-size:.8rem; }
-.stats .stat .kv .v{ font-weight:700; }
-
-/* Player card compacto (por si quedó memoria de estiramiento) */
+/* ====== Player card (debajo de la barra) ====== */
 .player-card{
-  position: fixed !important;
-  left: 50% !important;
-  top: calc(40vh + 42px) !important;  /* debajo de la barra centrada */
-  transform: translateX(-50%) !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-
-  width: min(420px, 72vw) !important;
-  height: auto !important;
-
-  padding: 14px 16px !important;
-  border-radius: 18px !important;
-
-  background: rgba(18,24,33,.65) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,.35) !important;
-  backdrop-filter: blur(8px) saturate(120%) !important;
+  position: fixed;
+  left: 50%;
+  top: calc(40vh + 58px); /* ↓ subí/bajá acá */
+  transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 12px;
+  width: min(420px, 72vw);
+  padding: 14px 16px; border-radius: 18px;
+  background: rgba(18,24,33,.65);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+  backdrop-filter: blur(8px) saturate(120%);
+  z-index: 6;
 }
-.player-card.card::before,
-.player-card.card::after,
-.player-card::before,
-.player-card::after{
-  content: none !important;
-  display: none !important;
-}
+.player-card .avatar{ width:64px; height:64px; border-radius:14px; object-fit:cover; box-shadow:var(--shadow); }
+.pc-info .hi{ color:#9fbed6; font-size:12px; }
+.pc-info .nick{ font-weight:800; font-size:20px; letter-spacing:.3px; font-family:'MontserratX',Inter,system-ui; }
+.pc-info .sid{ color:#9fbed6; font-size:12px; }
 
-/* === STATS (chips) abajo, centradas === */
-.stats{
-  position: fixed !important;
-  left: 50% !important;
-  bottom: 34px !important;              /* ajusta altura desde el borde inferior */
-  transform: translateX(-50%) !important;
-
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 14px !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  width: min(1100px, 92vw) !important;  /* ancho máximo del conjunto */
-  margin: 0 !important;
-  z-index: 6 !important;                /* por encima del fondo */
-  pointer-events: none;                 /* deja pasar clics salvo en cada chip */
-}
-.stats .stat{
-  pointer-events: auto;                 /* los chips sí reciben hover/click */
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  padding: 10px 14px !important;
-  height: auto !important;
-  border-radius: 14px !important;
-  background: rgba(18,24,33,.65) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 8px 18px rgba(0,0,0,.28) !important;
-  backdrop-filter: blur(8px) saturate(120%) !important;
-}
-.stats .stat.card::before,
-.stats .stat.card::after,
-.stats .stat::before,
-.stats .stat::after{ content:none !important; display:none !important; }
-
-/* === “¡Bienvenid@!” centrado entre perfil y stats === */
+/* ====== Bienvenida (entre perfil y stats) ====== */
 .welcome{
-  position: fixed !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-
-  /* Colócalo por encima de las stats (entre perfil y chips) */
-  bottom: 110px !important;             /* ajusta: más grande => más arriba */
-  z-index: 6 !important;
-
-  margin: 0 !important;
-  padding: 6px 12px;
-  font-family: "MontserratX", Arial, sans-serif;
-  font-weight: 800;
-  font-size: 1.35rem;
-  letter-spacing: .4px;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,.45);
-  opacity: .98;
+  position: fixed;
+  left: 50%; transform: translateX(-50%);
+  bottom: 110px;  /* se coloca justo encima de las stats */
+  z-index: 6;
+  margin: 0; padding: 6px 12px;
+  font-family: 'MontserratX', Arial, sans-serif;
+  font-weight: 800; font-size: 1.35rem; letter-spacing: .4px;
+  color:#fff; text-shadow: 0 2px 8px rgba(0,0,0,.45);
+  opacity:.98;
 }
 
-/* (Nos quedamos con el perfil fijo bajo la barra como ya lo tenías) */
-.player-card{
-  position: fixed !important;
-  left: 50% !important;
-  top: calc(40vh + 58px) !important;    /* justo debajo de la barra */
-  transform: translateX(-50%) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  width: min(420px, 72vw) !important;
-  padding: 14px 16px !important;
-  height: auto !important;
-  border-radius: 18px !important;
-  background: rgba(18,24,33,.65) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,.35) !important;
-  backdrop-filter: blur(8px) saturate(120%) !important;
-  z-index: 6 !important;
+/* ====== Stats (chips) abajo ====== */
+.stats{
+  position: fixed;
+  left:50%; transform: translateX(-50%);
+  bottom: 110px; /* altura del conjunto completo (ajústalo) */
+  display:flex; flex-wrap:wrap; gap:14px; justify-content:center; align-items:center;
+  width:min(1100px, 92vw);
+  margin:0; z-index:6; pointer-events:none;
 }
-.player-card.card::before,
-.player-card.card::after,
-.player-card::before,
-.player-card::after{ content:none !important; display:none !important; }
-
-
-/* === PARCHE: stats un poco más arriba y tips debajo, con Montserrat === */
-
-/* Sube las stats (ajusta el valor si querés) */
-body .stats{
-  bottom: 110px !important;      /* antes 34px */
-  z-index: 6 !important;
+.stat{
+  pointer-events:auto;
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:14px;
+  background: rgba(18,24,33,.65);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: 0 8px 18px rgba(0,0,0,.28);
+  backdrop-filter: blur(8px) saturate(120%);
 }
+.stat .ic{ font-size:22px; filter:drop-shadow(0 2px 8px rgba(0,0,0,.6)); }
+.stat .k{ font-size:11px; color:#a7b8c9; letter-spacing:.6px; }
+.stat .v{ font-size:17px; font-weight:800; }
 
-/* Posiciona los tips centrados abajo */
-body .tips{
-  position: fixed !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  bottom: 24px !important;       /* debajo de las stats */
-  z-index: 6 !important;
-
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  /* evita que el contenedor bloquee clics del juego */
-  pointer-events: none;
+/* ====== Tips y footer ====== */
+.foot{ display:flex; align-items:center; justify-content:flex-end; padding:12px 18px 20px; }
+.tips{
+  position: fixed; left:50%; transform:translateX(-50%);
+  bottom:24px; z-index:6;
+  display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;
+  pointer-events:none;
 }
-
-/* Cada tip/chip con Montserrat y permite hover/click si lo necesitás */
-body .tip{
-  pointer-events: auto;
-  font-family: 'MontserratX', Inter, system-ui, Arial !important;
-  font-weight: 800 !important;
-  letter-spacing: .3px !important;
+.tip{
+  pointer-events:auto;
+  background:rgba(255,255,255,.06);
+  padding:8px 12px; border-radius:999px; white-space:nowrap;
+  font-family:'MontserratX', Inter, system-ui, Arial; font-weight:800; letter-spacing:.3px;
 }
-
-/* Botón de música a la derecha dentro del footer */
-body .foot{
-  justify-content: flex-end !important;
+.btn{
+  appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:800;
+  background:var(--glass); color:#eaf2ff; box-shadow:var(--shadow); cursor:pointer;
 }
-body .foot .btn#mute{
-  margin-left: auto !important;
+.btn:hover{ outline:2px solid rgba(155,226,255,.28); }
+
+/* ====== Audio gate (overlay para autoplay en web) ====== */
+.audio-gate{
+  position:fixed; inset:0; z-index:9; display:grid; place-items:center;
+  background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
+  backdrop-filter: blur(6px);
+}
+.gate-card{ background:var(--glass); box-shadow:var(--shadow); border-radius:22px; padding:24px 22px; width:min(520px,92vw); text-align:center; }
+.gate-title{ font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:28px; margin-bottom:6px; }
+.gate-sub{ color:#b9c6d8; font-size:14px; margin-bottom:16px; }
+.gate-btn{ font-size:16px; padding:12px 18px; }
+
+/* ====== Responsivo ====== */
+@media (max-width: 980px){
+  .pct{ font-size:1rem; }
+  .pc-info .nick{ font-size:18px; }
+}
+@media (max-width: 560px){
+  .titles h1{ font-size:22px; }
+  .welcome{ font-size:1.15rem; bottom: 120px; }
+  .stats{ bottom: 86px; }
 }
