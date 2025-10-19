@@ -284,12 +284,106 @@ section.center .progress[aria-label="Progreso"] .pct.bump{ transform: scale(1.06
 @keyframes sweep{ 0%{transform:translateX(-140%) rotate(0.001deg)} 100%{transform:translateX(140%) rotate(0.001deg)} }
 
 /* HOTFIX + posiciones finales (tuyas) */
-.stats{ position: fixed !important; left:50% !important; bottom:34px !important; transform:translateX(-50%) !important; display:flex !important; flex-wrap:wrap !important; gap:14px !important; justify-content:center !important; align-items:center !important; width:min(1100px,92vw) !important; margin:0 !important; z-index:6 !important; pointer-events:none; }
-.stats .stat{ pointer-events:auto; display:inline-flex !important; align-items:center !important; gap:10px !important; padding:10px 14px !important; height:auto !important; border-radius:14px !important; background:rgba(18,24,33,.65) !important; border:1px solid rgba(255,255,255,.10) !important; box-shadow:0 8px 18px rgba(0,0,0,.28) !important; backdrop-filter:blur(8px) saturate(120%) !important; }
-.welcome{ position:fixed !important; left:50% !important; transform:translateX(-50%) !important; bottom:110px !important; z-index:6 !important; margin:0 !important; padding:6px 12px; font-family:"MontserratX", Arial, sans-serif; font-weight:800; font-size:1.35rem; letter-spacing:.4px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.45); opacity:.98; }
-.player-card{ position:fixed !important; left:50% !important; top:calc(40vh + 58px) !important; transform:translateX(-50%) !important; display:inline-flex !important; align-items:center !important; gap:12px !important; width:min(420px,72vw) !important; padding:14px 16px !important; height:auto !important; border-radius:18px !important; background:rgba(18,24,33,.65) !important; border:1px solid rgba(255,255,255,.10) !important; box-shadow:0 10px 24px rgba(0,0,0,.35) !important; backdrop-filter:blur(8px) saturate(120%) !important; z-index:6 !important; }
-body .stats{ bottom:110px !important; }
-body .tips{ position:fixed !important; left:50% !important; transform:translateX(-50%) !important; bottom:24px !important; z-index:6 !important; display:flex !important; flex-wrap:wrap !important; gap:12px !important; justify-content:center !important; align-items:center !important; pointer-events:none; }
-body .tip{ pointer-events:auto; font-family:'MontserratX', Inter, system-ui, Arial !important; font-weight:800 !important; letter-spacing:.3px !important; }
+
+/* === STATS (chips) abajo, centradas — con interactividad === */
+.stats{
+  position: fixed !important;
+  left:50% !important;
+  bottom:110px !important;                  /* subidas */
+  transform:translateX(-50%) !important;
+
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:14px !important;
+  justify-content:center !important;
+  align-items:center !important;
+
+  width:min(1100px,92vw) !important;
+  margin:0 !important;
+
+  z-index:6 !important;                     /* por debajo del perfil */
+  pointer-events:auto !important;           /* << habilita hover/click en chips */
+}
+.stats .stat{
+  pointer-events:auto;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding:10px 14px !important;
+  height:auto !important;
+  border-radius:14px !important;
+  background:rgba(18,24,33,.65) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.28) !important;
+  backdrop-filter:blur(8px) saturate(120%) !important;
+}
+
+/* “¡Bienvenid@!” centrado entre perfil y stats */
+.welcome{
+  position:fixed !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  bottom:110px !important;
+  z-index:6 !important;
+
+  margin:0 !important;
+  padding:6px 12px;
+  font-family:"MontserratX", Arial, sans-serif;
+  font-weight:800;
+  font-size:1.35rem;
+  letter-spacing:.4px;
+  color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.45);
+  opacity:.98;
+}
+
+/* Perfil/Avatar centrado, por encima de las stats */
+.player-card{
+  position:fixed !important;
+  left:50% !important;
+  top:calc(40vh + 58px) !important;         /* misma posición que ya tenías */
+  transform:translateX(-50%) !important;
+
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:12px !important;
+
+  width:min(420px,72vw) !important;
+  padding:14px 16px !important;
+  height:auto !important;
+  border-radius:18px !important;
+
+  background:rgba(18,24,33,.65) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.35) !important;
+  backdrop-filter:blur(8px) saturate(120%) !important;
+
+  z-index:7 !important;                     /* << por encima de las stats */
+}
+
+/* Tips centrados abajo; contenedor no bloquea clics */
+body .tips{
+  position:fixed !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  bottom:24px !important;
+  z-index:6 !important;
+
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:12px !important;
+  justify-content:center !important;
+  align-items:center !important;
+
+  pointer-events:none;                      /* el contenedor no captura clics */
+}
+body .tip{
+  pointer-events:auto;                      /* cada chip sí permite hover/click */
+  font-family:'MontserratX', Inter, system-ui, Arial !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+}
+
+/* Botón música a la derecha del footer */
 body .foot{ justify-content:flex-end !important; }
 body .foot .btn#mute{ margin-left:auto !important; }
