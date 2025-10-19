@@ -5,7 +5,7 @@ if (window.__LS_INIT__) {
 window.__LS_INIT__ = true;
 
 // ===== Versión =====
-var APP_VERSION = 14.0;
+var APP_VERSION = 14.1;
 console.log('[LS] app.js cargado v' + APP_VERSION);
 
 // ===== Helper cache-busting para imágenes remotas =====
@@ -22,11 +22,11 @@ var CONFIG = {
   // Título fijo (si querés usar el hostname del server, poné null)
   forceTitle: "Quantum Pulse",
 
-  // Fondos: primero intentará Imgur; si falla, prueba local de GMod
+  // Fondos: **usar dominio directo de Imgur** (i.imgur.com) + fallback local de GMod
   slides: [
-    [ withBust('https://imgur.com/GJKhdJk.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://imgur.com/K4RpwBm.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ]
+    [ withBust('https://i.imgur.com/GJKhdJk.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
+    [ withBust('https://i.imgur.com/0RgiH9t.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
+    [ withBust('https://i.imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ]
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -57,14 +57,6 @@ var CONFIG = {
 const WEB = !window.gmod; // en Pages true
 (function adaptForEnv(){
   if (!WEB) return; // En GMod no tocamos rutas: siguen siendo asset://
-
-  // En web, usá los assets del repo (mismo dominio) para evitar CORS:
-  // (Si preferís Imgur, dejá slides como están)
-  // CONFIG.slides = [
-  //   ['/materials/loadscreen/bg1.jpg'],
-  //   ['/materials/loadscreen/bg2.jpg'],
-  //   ['/materials/loadscreen/bg3.jpg']
-  // ];
 
   // Música liviana para web
   CONFIG.music = CONFIG.music || {};
@@ -147,16 +139,14 @@ var P=0;(function tick(){
   }
 })();
 
-// ===== Tips (render + rotación) =====
+// ===== Tips (render) =====
 var tipsEl=document.getElementById('tips');
 if (tipsEl){
-  var items=[];
-  for(i=0;i<CONFIG.tips.length;i++){
+  for(var i=0;i<CONFIG.tips.length;i++){
     var b=document.createElement('div');
     b.className='tip';
     b.textContent=CONFIG.tips[i];
     tipsEl.appendChild(b);
-    items.push(b);
   }
 }
 
@@ -185,8 +175,7 @@ if (tipsEl){
     var url = candidates[i++];
     var test = new Image();
     test.onload = function(){
-      var bust = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
-      el.src = bust;
+      el.src = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
       console.log('[LS] OK logo', url, test.width + 'x' + test.height);
     };
     test.onerror = function(){ tryNext(); };
@@ -203,7 +192,6 @@ function _applyTitle(srcHostname){
                        : (srcHostname || (h1 && h1.textContent) || 'QUANTUM PULSE');
   if (h1) h1.textContent = title;
   document.title = title + ' — Pantalla de Carga';
-  console.log('[LS] Título aplicado →', title);
 }
 // Fade-in del DOM
 document.documentElement.classList.add('is-ready');
@@ -274,6 +262,66 @@ var audio = document.getElementById('bgm');
   }
 })();
 
+/* ---------------------- AVATAR DE STEAM (ARREGLADO) ---------------------- */
+/* Estrategia:
+   1) Si Lua manda onAvatar(url) → usarlo con cache-bust (se ve siempre).
+   2) Si todavía no llegó, mostrar inmediatamente un placeholder local
+      (/materials/loadscreen/avatar.png) si existe.
+   3) Si tampoco existe, generar una inicial con canvas (color acento).
+*/
+
+// intenta mostrar un placeholder local (si existe)
+function tryLocalAvatarPlaceholder(imgEl, done){
+  var candidates = [
+    '/materials/loadscreen/avatar.png',
+    '/materials/loadscreen/avatar.jpg',
+    'img/avatar.png',
+    'img/avatar.jpg'
+  ];
+  var i = 0;
+  function tryNext(){
+    if (i >= candidates.length){ if (done) done(false); return; }
+    var url = candidates[i++];
+    var test = new Image();
+    test.onload = function(){
+      imgEl.src = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
+      if (done) done(true);
+    };
+    test.onerror = function(){ tryNext(); };
+    test.src = url;
+  }
+  tryNext();
+}
+
+// genera un avatar con la inicial del nick
+function paintInitialAvatar(imgEl, letter){
+  var cvs = document.createElement('canvas'); cvs.width = cvs.height = 128;
+  var ctx = cvs.getContext('2d');
+  ctx.fillStyle = 'rgba(20,28,38,1)'; ctx.fillRect(0,0,128,128);
+  var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+  ctx.fillStyle = accent && accent.trim ? accent.trim() : CONFIG.accent;
+  ctx.beginPath(); ctx.arc(64,64,54,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 64px MontserratX, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(letter, 64, 70);
+  imgEl.src = cvs.toDataURL('image/png');
+}
+
+function ensureAvatarVisible(nick){
+  var aimg = document.getElementById('avatar');
+  if (!aimg) return;
+  // si ya hay uno externo aplicado, no tocamos
+  if (aimg.getAttribute('data-external') === '1') return;
+  if (aimg.src && aimg.src.startsWith('data:')) return;
+
+  // 1) probar placeholder local → si no hay, 2) dibujar inicial
+  tryLocalAvatarPlaceholder(aimg, function(ok){
+    if (!ok) {
+      var letter = (nick||'J').charAt(0).toUpperCase();
+      paintInitialAvatar(aimg, letter);
+    }
+  });
+}
+
 // ===== GMOD bridge =====
 window.onGMOD = function(data){
   _applyTitle(data && data.hostname);
@@ -293,20 +341,8 @@ window.onGMOD = function(data){
   var jobEl =document.getElementById('st-rank'); if(jobEl)  jobEl.textContent  = job;
   var monEl =document.getElementById('st-money');if(monEl)  monEl.textContent  = safeMoney(money);
 
-  // Avatar fallback si no llega onAvatar
-  var aimg = document.getElementById('avatar');
-  if (aimg && (!aimg.getAttribute('data-external') || !aimg.src)){
-    var letter = nick.charAt(0).toUpperCase();
-    var cvs = document.createElement('canvas'); cvs.width = cvs.height = 128;
-    var ctx = cvs.getContext('2d');
-    ctx.fillStyle = 'rgba(20,28,38,1)'; ctx.fillRect(0,0,128,128);
-    var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-    ctx.fillStyle = accent && accent.trim ? accent.trim() : CONFIG.accent;
-    ctx.beginPath(); ctx.arc(64,64,54,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 64px MontserratX, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(letter, 64, 70);
-    aimg.src = cvs.toDataURL('image/png');
-  }
+  // Garantizar que haya algo visible ya mismo
+  ensureAvatarVisible(nick);
 };
 
 // Tick (solo sesión)
@@ -316,11 +352,11 @@ window.onGMODTick = function(data){
   var timeEl=document.getElementById('st-time'); if(timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
 };
 
-// Avatar desde Lua
+// Avatar desde Lua (definitivo)
 window.onAvatar = function(url){
   try{
     var img = document.getElementById('avatar');
-    if (!img) return;
+    if (!img || !url) return;
     var bust = (url.indexOf('?') === -1) ? (url + '?v=' + Date.now()) : (url + '&v=' + Date.now());
     img.crossOrigin = 'anonymous';
     img.src = bust;
@@ -356,6 +392,3 @@ window.onAvatar = function(url){
   }
   step();
 })();
-
-
-
