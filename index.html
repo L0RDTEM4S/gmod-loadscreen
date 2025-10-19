@@ -5,21 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Loadscreen</title>
 
-  <!-- CSS relativo: sirve en web y en juego -->
-  <link rel="stylesheet" href="style.css?v=web4" />
+  <!-- CSS correcto para Pages -->
+  <link rel="stylesheet" href="resource/loadscreen/style.css?v=web5" />
 </head>
 <body>
-  <!-- Fondo y capa -->
-  <div id="bg"><!-- Slides via app.js --></div>
+  <div id="bg"></div>
   <div class="overlay"></div>
   <canvas id="fx"></canvas>
   <div class="vignette"></div>
 
-  <!-- UI principal (esto faltaba en el HTML “recortado”) -->
   <main class="wrap">
     <header class="top">
       <div class="brand card">
-        <img id="logo" src="img/logo.png" alt="logo" />
+        <img id="logo" src="resource/loadscreen/img/logo.png" alt="logo" />
         <div class="titles">
           <h1 id="title">Quantum Pulse</h1>
           <p id="subtitle">Gamemode: —</p>
@@ -54,12 +52,11 @@
 
     <footer class="foot">
       <div class="tips" id="tips"></div>
-      <!-- Botón música a la DERECHA -->
       <button class="btn" id="mute" style="margin-left:auto">🔊 Música</button>
     </footer>
   </main>
 
-  <!-- Gate para autoplay (solo se muestra si el navegador bloquea) -->
+  <!-- Gate autoplay (se muestra si el navegador bloquea el audio) -->
   <div class="audio-gate" id="audio-gate" style="display:none;">
     <div class="gate-card">
       <div class="gate-title">¿Listo para empezar?</div>
@@ -68,11 +65,11 @@
     </div>
   </div>
 
-  <!-- Audio: usa carpeta /sound en juego y en Pages -->
+  <!-- Audio: ruta válida para Pages y para el servidor -->
   <audio id="bgm" preload="auto" src="sound/loadscreen/music.wav"></audio>
 
-  <!-- JS relativo (funciona en web y en juego). gmod.Ready existe solo en juego -->
-  <script src="app.js?v=web4" defer></script>
+  <!-- JS correcto para Pages -->
+  <script src="resource/loadscreen/app.js?v=web5" defer></script>
   <script>
     if (window.gmod && typeof gmod.Ready === 'function') gmod.Ready();
   </script>
