@@ -1,44 +1,11 @@
 // ---- SINGLETON GUARD (evita doble init si se incluye 2 veces por error) ----
-// Detectar entorno
-const WEB = !window.gmod;
-
-// Si estás en Pages, usa archivos del repo (relativos)
-// Si estás en GMod, usa asset:// como ya tenías
-if (typeof CONFIG !== 'undefined') {
-  // Backgrounds (si usás Imgur ya te andan igual en web y juego)
-  // Si querés usar los que subiste al repo:
-  // CONFIG.slides = [
-  //   ['./materials/loadscreen/bg1.jpg'],
-  //   ['./materials/loadscreen/bg2.jpg'],
-  //   ['./materials/loadscreen/bg3.jpg']
-  // ];
-
-  // Logo “materials” (cuando no usas Imgur para el logo)
-  // En web:
-  // document.getElementById('logo')?.setAttribute('src','./materials/loadscreen/logo.png');
-
-  // Playlist según entorno
-  CONFIG.music = CONFIG.music || {};
-  CONFIG.music.list = WEB
-    ? ['./sound/loadscreen/music.ogg']     // comprimido para Pages
-    : (CONFIG.music.list && CONFIG.music.list.length
-        ? CONFIG.music.list
-        : ['asset://garrysmod/sound/loadscreen/music.wav']); // WAV local en GMod
-
-  // Volumen como lo tenías
-  if (CONFIG.music.volume == null) CONFIG.music.volume = 0.65;
-}
-
-
-
-
 if (window.__LS_INIT__) {
   console.warn('[LS] app.js ya estaba inicializado; ignoro este segundo include.');
 }
 window.__LS_INIT__ = true;
 
 // ===== Versión =====
-var APP_VERSION = 13.6;
+var APP_VERSION = 13.7;
 console.log('[LS] app.js cargado v' + APP_VERSION);
 
 // ===== Helper cache-busting para imágenes remotas =====
@@ -52,14 +19,14 @@ var CONFIG = {
   accent: '#39b4ff',
   accent2: '#9ee8ff',
 
-  // Título del servidor (fijo)
+  // Título del servidor (fijo) — si querés usar el hostname del server, poné null
   forceTitle: "Quantum Pulse",
 
-  // Fondos (ej.: 2 Imgur + fallback local)
+  // Fondos (usar SIEMPRE i.imgur.com para imagen directa)
   slides: [
-    [ withBust('https://imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://imgur.com/K4RpwBm.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://imgur.com/GJKhdJk.jpg'), '' ],
+    [ withBust('https://i.imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
+    [ withBust('https://i.imgur.com/K4RpwBm.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
+    [ withBust('https://i.imgur.com/GJKhdJk.jpg') ]
     // [ 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
   ],
   shuffleSlides: true,
@@ -88,7 +55,30 @@ var CONFIG = {
   }
 };
 
+// ===== Detección de entorno y ajuste de rutas (¡debe ir DESPUÉS de definir CONFIG!)
+const WEB = !window.gmod;
+(function applyEnv(){
+  // Slides: si usás Imgur, ya andan en ambos entornos (web/juego).
+  // Si querés forzar a usar archivos del repo en Pages, descomenta esto:
+  // if (WEB) {
+  //   CONFIG.slides = [
+  //     ['./materials/loadscreen/bg1.jpg'],
+  //     ['./materials/loadscreen/bg2.jpg'],
+  //     ['./materials/loadscreen/bg3.jpg']
+  //   ];
+  // }
 
+  // Música: OGG para web (Pages), WAV para GMod
+  CONFIG.music = CONFIG.music || {};
+  if (WEB) {
+    CONFIG.music.list = ['./sound/loadscreen/music.ogg']; // liviano para Pages
+  } else {
+    if (!Array.isArray(CONFIG.music.list) || !CONFIG.music.list.length) {
+      CONFIG.music.list = [ CONFIG.music.src || 'asset://garrysmod/sound/loadscreen/music.wav' ];
+    }
+  }
+  if (CONFIG.music.volume == null) CONFIG.music.volume = 0.65;
+})();
 
 // ===== CSS variables =====
 var root = document.documentElement;
@@ -176,7 +166,7 @@ var P=0;(function tick(){
   }
 })();
 
-// ===== Tips (render + rotación) =====
+// ===== Tips (render + rotación suave) =====
 var tipsEl=document.getElementById('tips');
 if (tipsEl){
   var items=[];
@@ -235,7 +225,7 @@ if (tipsEl){
   tryNext();
 })();
 
-// ===== Helper central de Título =====
+// ===== Helper de Título =====
 function _applyTitle(srcHostname){
   var h1 = document.getElementById('title');
   var hasForce = (CONFIG.forceTitle !== null && CONFIG.forceTitle !== undefined);
@@ -245,12 +235,11 @@ function _applyTitle(srcHostname){
   document.title = title + ' — Pantalla de Carga';
   console.log('[LS] Título aplicado →', title, '| forceTitle =', hasForce ? JSON.stringify(CONFIG.forceTitle) : '(null)');
 }
-// Aplicar al cargar (estado base)
+// Aplicar base
 _applyTitle();
-// Hacer que todo entre con fade una vez listo el DOM
 document.documentElement.classList.add('is-ready');
 
-// ===== Música (WAV robusto con PLAYLIST) =====
+// ===== Música (playlist) =====
 var muteBtn = document.getElementById('mute');
 var audio = document.getElementById('bgm');
 
@@ -258,7 +247,6 @@ var audio = document.getElementById('bgm');
   if (!CONFIG.music.enabled){ if (muteBtn) muteBtn.style.display='none'; return; }
   if (!audio){ console.error('[LS] Falta <audio id="bgm">'); if (muteBtn) muteBtn.style.display='none'; return; }
 
-  // --- Fuentes: usa list si existe; si no, cae a src ---
   var list = Array.isArray(CONFIG.music.list) && CONFIG.music.list.length
     ? CONFIG.music.list.slice()
     : [ CONFIG.music.src || (audio.getAttribute('src') || 'asset://garrysmod/sound/loadscreen/music.wav') ];
@@ -281,29 +269,25 @@ var audio = document.getElementById('bgm');
     load(idx);
     audio.muted = false;
     audio.volume = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
-    audio.loop = false; // para que haga "ended" y pase al siguiente
+    audio.loop = false;
     var p = audio.play();
-    if (p && p.catch) p.catch(()=>{ /* autoplay bloqueado; se maneja abajo */ });
+    if (p && p.catch) p.catch(()=>{});
   }
 
-  // Logs útiles
   audio.addEventListener('loadedmetadata', function(){ console.log('[LS] loadedmetadata OK. duration=', audio.duration); });
   audio.addEventListener('canplaythrough', function(){ console.log('[LS] canplaythrough'); });
   audio.addEventListener('error', function(){
     var e=audio.error, map={1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
     console.error('[LS] AUDIO ERROR code', e?e.code:'n/a', e?(map[e.code]||'UNKNOWN'):'UNKNOWN', '→', audio.currentSrc || '(sin src)');
-    // Si falla esta pista, intento siguiente
     idx = (idx + 1) % list.length;
     load(idx);
   });
 
-  // Al terminar una pista, pasa a la siguiente
   audio.addEventListener('ended', function(){
     idx = (idx + 1) % list.length;
     startFrom(idx);
   });
 
-  // Intento autoplay; si se bloquea, arranca al clic/tecla
   startFrom(0);
   (audio.play() || Promise.reject()).then(()=>{
     audio.muted = false;
@@ -315,14 +299,12 @@ var audio = document.getElementById('bgm');
     window.addEventListener('keydown',     kick, {once:true});
   });
 
-  // Botón Mute/Play
   if (muteBtn){
     muteBtn.addEventListener('click', function(){
       if (audio.paused) {
         var target = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
         audio.volume = 0.0;
-        var p = audio.play();
-        if (p && p.catch) p.catch(()=>{});
+        var p = audio.play(); if (p && p.catch) p.catch(()=>{});
         var t = setInterval(function(){
           audio.volume = Math.min(target, audio.volume + (target/12));
           if (audio.volume >= target) clearInterval(t);
@@ -341,7 +323,6 @@ var audio = document.getElementById('bgm');
 
 // ===== GMOD bridge =====
 window.onGMOD = function(data){
-  // Título (usa forceTitle si está)
   _applyTitle(data && data.hostname);
 
   var sub = document.getElementById('subtitle');
@@ -359,7 +340,7 @@ window.onGMOD = function(data){
   var jobEl =document.getElementById('st-rank'); if(jobEl)  jobEl.textContent  = job;
   var monEl =document.getElementById('st-money');if(monEl)  monEl.textContent  = safeMoney(money);
 
-  // Avatar fallback (inicial) si no llega onAvatar
+  // Avatar fallback si no llega onAvatar
   var aimg = document.getElementById('avatar');
   if (aimg && (!aimg.getAttribute('data-external') || !aimg.src)){
     var letter = nick.charAt(0).toUpperCase();
@@ -374,11 +355,6 @@ window.onGMOD = function(data){
     aimg.src = cvs.toDataURL('image/png');
   }
 };
-window.onGMODTick = function(data){
-  var t = Math.max(0, Number((data && data.session) || 0));
-  var h = Math.floor(t/3600), m = Math.floor((t%3600)/60);
-  var timeEl=document.getElementById('st-time'); if(timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
-};
 
 // ===== Avatar de Steam (desde Lua) =====
 window.onAvatar = function(url){
@@ -392,7 +368,7 @@ window.onAvatar = function(url){
   }catch(e){ console.warn('[LS] onAvatar error:', e && e.message); }
 };
 
-// ===== FX partículas (sutil y en movimiento) =====
+// ===== FX partículas (sutil) =====
 (function(){
   var canvas = document.getElementById('fx');
   if (!canvas) return;
@@ -441,20 +417,17 @@ window.onAvatar = function(url){
   step();
 })();
 
-// --- Debug: tecla N para siguiente slide (podés borrar si no lo usás) ---
-window.addEventListener('keydown', function(ev){
-  if (ev.key && ev.key.toLowerCase() === 'n' && typeof nextSlide === 'function') nextSlide();
-});
-
-// === Playtime total (persistente) que manda el servidor ===
+// === Playtime total (persistente) ===
 window.__QP_BASE_TOTAL__ = 0; // segundos persistentes (PData) enviados por sv_playtime.lua
-
-// Server → JS: total persistente (en segundos). Lo guarda y refresca el stat.
+function updateTimeStat(totalSec) {
+  var h = Math.floor(totalSec/3600), m = Math.floor((totalSec%3600)/60);
+  var timeEl = document.getElementById('st-time');
+  if (timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
+}
 window.onPlaytime = function(totalSeconds) {
   try {
     if (isFinite(totalSeconds)) {
       window.__QP_BASE_TOTAL__ = Math.max(0, Number(totalSeconds) || 0);
-      // refresco inmediato del stat, sumando lo que ya llevamos de sesión si lo tenemos
       if (typeof window.__QP_SESSION_SEC__ === 'number') {
         updateTimeStat(window.__QP_BASE_TOTAL__ + window.__QP_SESSION_SEC__);
       } else {
@@ -464,17 +437,14 @@ window.onPlaytime = function(totalSeconds) {
   } catch (e) { console.warn('[LS] onPlaytime error:', e && e.message); }
 };
 
-// Tu tick actual (sesión): guardamos la sesión en segundos y refrescamos con base+sesión
-function updateTimeStat(totalSec) {
-  var h = Math.floor(totalSec/3600), m = Math.floor((totalSec%3600)/60);
-  var timeEl = document.getElementById('st-time');
-  if (timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
-}
-
-// Si ya tenías window.onGMODTick, solo agrega estas 2 líneas:
+// ===== GMOD tick (sesión) — ÚNICO (no lo dupliques en otra parte) =====
 window.onGMODTick = function (data) {
   var t = Math.max(0, Number((data && data.session) || 0)); // segundos de la sesión actual
-  window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
-  updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
+  window.__QP_SESSION_SEC__ = t;
+  updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t);
 };
 
+// --- Debug: tecla N para siguiente slide (podés borrar si no lo usás) ---
+window.addEventListener('keydown', function(ev){
+  if (ev.key && ev.key.toLowerCase() === 'n' && typeof nextSlide === 'function') nextSlide();
+});
