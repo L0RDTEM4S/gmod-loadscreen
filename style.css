@@ -258,3 +258,88 @@ body .tip{
   letter-spacing: .3px !important;
 }
 
+/* === OVERRIDES FINALES (forzar layout correcto) === */
+
+/* Sección central (barra + “conectando”) */
+body section.center{
+  position: fixed !important;
+  left: 50% !important;
+  top: 32vh !important;
+  transform: translateX(-50%) !important;
+  width: min(1000px, 88vw) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  z-index: 5 !important;
+}
+
+/* Tarjeta de perfil: bajo la barra */
+body .player-card{
+  position: fixed !important;
+  left: 50% !important;
+  top: calc(32vh + 64px) !important; /* subilo/bajalo aquí */
+  transform: translateX(-50%) !important;
+  z-index: 6 !important;
+}
+
+/* “¡Bienvenid@!” en el medio entre perfil y stats */
+body .welcome{
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 140px !important;          /* más grande = más arriba */
+  z-index: 6 !important;
+  margin: 0 !important;
+}
+
+/* Stats en una fila, abajo y centradas */
+body .stats{
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 96px !important;            /* subí/bajá las fichas */
+  transform: translateX(-50%) !important;
+
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  width: min(1100px, 92vw) !important;
+  margin: 0 !important;
+  z-index: 6 !important;
+
+  pointer-events: none !important;    /* no bloquea el fondo */
+}
+body .stats .stat{
+  pointer-events: auto !important;    /* cada chip sí captura hover/click */
+}
+
+/* Tips centrados, por debajo de las stats, con Montserrat */
+body .tips{
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 28px !important;
+  transform: translateX(-50%) !important;
+
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  justify-content: center !important;
+
+  z-index: 6 !important;
+  pointer-events: none !important;
+}
+body .tip{
+  pointer-events: auto !important;
+  font-family: 'MontserratX', Inter, system-ui, Arial !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+}
+
+/* (opcional) Botón de música a la derecha */
+body .foot{ justify-content: flex-end !important; }
+body .foot .btn#mute{ margin-left: auto !important; }
+
+
