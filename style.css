@@ -1,44 +1,34 @@
 /* ====== Fuente (Montserrat ExtraBold local) ====== */
 @font-face{
   font-family: 'MontserratX';
-  src: url('fonts/Montserrat-ExtraBold.ttf') format('truetype');
+  src: url('/fonts/Montserrat-ExtraBold.ttf') format('truetype');
   font-weight: 800; font-style: normal; font-display: swap;
 }
 
 /* ====== Reset & base ====== */
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
+*{box-sizing:border-box}
+html,body{height:100%}
+
+/* 🎨 PALETA / INTENSIDADES */
+:root{
+  --accent:#39b4ff;
+  --accent2:#9ee8ff;
+  --bg1:#0b0f14;
+  --glass:rgba(15,22,32,.55);
+  --glass2:rgba(15,22,32,.78);
+  --blur:18px;
+  --shadow:0 12px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
+  --fade:1100ms;
+}
+
 body{
-  margin:0;
-  background:#0b0f14;
-  color:#eaf2ff;
+  margin:0; background:var(--bg1); color:#eaf2ff;
   font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
   overflow:hidden;
 }
 
-/* ====== Paleta global ====== */
-:root{
-  --accent:#39b4ff;
-  --accent2:#9ee8ff;
-  --glass:rgba(15,22,32,.78);
-  --blur:18px;
-  --shadow:0 12px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
-  --fade:1100ms;
-
-  /* Barra neón (puedes cambiar colores vivos aquí) */
-  --barW: min(860px, 72vw);
-  --barH: 18px;
-  --barR: 14px;
-  --c1:#00F0FF; /* cian */
-  --c2:#9E00FF; /* violeta */
-  --c3:#FF007A; /* magenta */
-  --track: rgba(255,255,255,.08);
-  --trackBorder: rgba(255,255,255,.12);
-  --pct: #ffffff;
-}
-
-/* ====== Background / slideshow / FX ====== */
-#bg{ position:fixed; inset:0; z-index:0; overflow:hidden; }
+/* ===== Background ===== */
+#bg{position:fixed;inset:0;z-index:0; overflow:hidden;}
 .bg-slide{
   position:absolute; inset:-2% -2%;
   background-size:cover; background-position:center;
@@ -46,300 +36,150 @@ body{
   transition: opacity var(--fade) ease-in-out, transform 9s ease-in-out;
   filter:saturate(1.05) contrast(1.02) brightness(1.02);
 }
-.bg-slide.active{ opacity:1; transform:scale(1.03); }
-.bg-slide.kenburns{ animation:kb 26s ease-in-out infinite; }
-@keyframes kb{ 0%{transform:scale(1.03)} 100%{transform:scale(1.05)} }
+.bg-slide.active{opacity:1; transform:scale(1.03)}
+.bg-slide.kenburns{animation:kb 26s ease-in-out infinite}
+@keyframes kb{0%{transform:scale(1.03)} 100%{transform:scale(1.05)}}
 
 .overlay{
+  position:fixed;inset:0;z-index:1;
+  background:radial-gradient(circle at 25% -10%,rgba(57,180,255,.18),transparent 40%),
+             linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.6) 70%);
+}
+
+/* FX */
+#fx{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.35; }
+.vignette{
   position:fixed; inset:0; z-index:1; pointer-events:none;
   background:
-    radial-gradient(circle at 25% -10%, rgba(57,180,255,.18), transparent 40%),
-    linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,.6) 70%);
+    radial-gradient(1200px 800px at 10% 10%, rgba(57,180,255,.08), transparent 60%),
+    radial-gradient(1200px 800px at 90% 90%, rgba(255,255,255,.05), transparent 60%),
+    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,.45) 100%);
+  mix-blend-mode: screen;
 }
-#fx{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.35; }
 
-/* ====== Layout base ====== */
-.wrap{ position:relative; z-index:2; height:100%;
-  display:grid; grid-template-rows:auto 1fr auto auto; gap:14px; }
-.card{ background:var(--glass); backdrop-filter:blur(var(--blur)); border-radius:20px; box-shadow:var(--shadow); }
+/* ===== Layout ===== */
+.wrap{position:relative;z-index:3;height:100%;display:grid;grid-template-rows:auto 1fr auto auto;gap:14px}
+.card{background:var(--glass2);backdrop-filter:blur(var(--blur));border-radius:20px;box-shadow:var(--shadow)}
 
-.top{ display:flex; align-items:center; justify-content:center; padding:20px; }
-.brand{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
-.brand img{ width:60px; height:60px; border-radius:16px; box-shadow:var(--shadow); }
-.titles h1{ margin:0; font-size:28px; letter-spacing:.6px; font-family:'MontserratX',Inter,system-ui; }
-.titles p{ margin:2px 0 0; font-size:14px; color:#b9c6d8; }
+.top{display:flex;align-items:center;justify-content:center;padding:20px}
+.brand{display:flex;align-items:center;gap:16px;padding:12px 16px}
+.brand img{width:60px;height:60px;border-radius:16px;box-shadow:var(--shadow)}
+.titles h1{margin:0;font-size:28px;letter-spacing:.6px;font-family:'MontserratX',Inter,system-ui}
+.titles p{margin:2px 0 0;font-size:14px;color:#b9c6d8}
 
-.center{ display:grid; place-items:center; gap:18px; }
+/* ===== Center ===== */
+.center{display:grid;place-items:center;gap:18px}
 
-/* ====== Barra de progreso (neón, centrada) ====== */
-section.center{
-  position: fixed;
-  left: 50%;
-  top: 40vh;
-  transform: translate(-50%, -50%);
-  width: var(--barW);
-  display: flex; flex-direction: column; gap: 12px;
-  align-items: stretch; z-index: 3;
-}
-section.center .loading{
-  text-align:center;
-  font-family:'MontserratX', Arial, sans-serif;
-  font-weight:700; letter-spacing:.3px;
-  color: rgba(255,255,255,.95);
-  margin:0;
-}
+/* Barra de carga (clean) */
 .progress{
-  position:relative; width:100%; height:var(--barH);
-  border-radius:var(--barR); overflow:hidden;
-  background: var(--track);
-  border: 1px solid var(--trackBorder);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 8px 22px rgba(0,0,0,.32);
-  backdrop-filter: blur(7px) saturate(120%);
+  width:min(1000px,88vw);height:18px;position:relative;border-radius:999px;
+  background:rgba(255,255,255,.06);
+  box-shadow:var(--shadow), inset 0 6px 18px rgba(0,0,0,.35);
 }
-.progress::before{
-  content:""; position:absolute; inset:0;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 10px);
+.progress::after{
+  content:"";position:absolute;left:8px;right:8px;top:2px;height:6px;border-radius:999px;
+  background:linear-gradient(to bottom,rgba(255,255,255,.35),rgba(255,255,255,0));
   pointer-events:none;
 }
-.progress i#bar{
-  position:absolute; left:0; top:0; bottom:0; width:0%;
-  border-radius:var(--barR);
-  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c1));
-  background-size: 300% 100%;
-  animation: neonFlow 6s linear infinite;
-  /* fallback shadows + soportes modernos */
-  box-shadow:
-    0 0 14px rgba(0,240,255,.35),
-    0 0 28px rgba(158,0,255,.25),
-    0 0 42px rgba(255,0,122,.18);
-  transition: width 130ms linear;
+.progress>i{
+  display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  box-shadow:0 0 22px rgba(57,180,255,.6), inset 0 -4px 10px rgba(0,0,0,.25);
+  position:relative;overflow:hidden;
 }
-@keyframes neonFlow{ 0%{background-position:0% 0} 100%{background-position:300% 0} }
-.progress i#bar::after{
-  content:""; position:absolute; inset:-40% -10%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.28) 45%, transparent 70%);
-  transform: translateX(-140%) rotate(0.001deg);
-  animation: sweep 2.3s ease-in-out infinite;
-  mix-blend-mode: screen; pointer-events:none;
+.progress>i:before{
+  content:"";position:absolute;inset:0;background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 10px,transparent 10px 20px);
+  mix-blend-mode:overlay;opacity:.25;animation:stripes 1.2s linear infinite;
 }
-@keyframes sweep{ 0%{transform:translateX(-140%) rotate(0.001deg)} 100%{transform:translateX(140%) rotate(0.001deg)} }
-
+@keyframes stripes{to{transform:translateX(20px)}}
 .pct{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-end;
-  padding-right:12px;
-  font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:1.1rem;
-  letter-spacing:.4px; color:var(--pct); text-shadow:0 1px 2px rgba(0,0,0,.6);
-  pointer-events:none;
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:14px;
+  letter-spacing:.6px; color:#eaf2ff; opacity:.9;
+  text-shadow:0 4px 16px rgba(0,0,0,.5); pointer-events:none;
 }
 
-/* ====== Player card (debajo de la barra) ====== */
-.player-card{
-  position: fixed;
-  left: 50%;
-  top: calc(40vh + 58px); /* ↓ subí/bajá acá */
-  transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 12px;
-  width: min(420px, 72vw);
-  padding: 14px 16px; border-radius: 18px;
-  background: rgba(18,24,33,.65);
-  border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 10px 24px rgba(0,0,0,.35);
-  backdrop-filter: blur(8px) saturate(120%);
-  z-index: 6;
-}
-.player-card .avatar{ width:64px; height:64px; border-radius:14px; object-fit:cover; box-shadow:var(--shadow); }
-.pc-info .hi{ color:#9fbed6; font-size:12px; }
-.pc-info .nick{ font-weight:800; font-size:20px; letter-spacing:.3px; font-family:'MontserratX',Inter,system-ui; }
-.pc-info .sid{ color:#9fbed6; font-size:12px; }
-
-/* ====== Bienvenida (entre perfil y stats) ====== */
+.loading{margin:0;font-size:20px;letter-spacing:1.2px;
+  font-family:'MontserratX',Inter,system-ui;text-shadow:0 6px 26px rgba(0,0,0,.6)}
 .welcome{
-  position: fixed;
-  left: 50%; transform: translateX(-50%);
-  bottom: 110px;  /* se coloca justo encima de las stats */
-  z-index: 6;
-  margin: 0; padding: 6px 12px;
-  font-family: 'MontserratX', Arial, sans-serif;
-  font-weight: 800; font-size: 1.35rem; letter-spacing: .4px;
-  color:#fff; text-shadow: 0 2px 8px rgba(0,0,0,.45);
-  opacity:.98;
+  margin:0;font-size:28px;font-weight:800;font-family:'MontserratX',Inter,system-ui;
+  text-shadow:0 10px 30px rgba(0,0,0,.65)
 }
 
-/* ====== Stats (chips) abajo ====== */
+/* ===== Player card ===== */
+.player-card{
+  justify-self:center;display:flex;align-items:center;gap:16px;
+  padding:12px 16px;max-width:min(720px,92vw);
+}
+.player-card .avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;box-shadow:var(--shadow)}
+.pc-info .hi{color:#9fbed6;font-size:12px}
+.pc-info .nick{font-weight:800;font-size:20px;letter-spacing:.3px;font-family:'MontserratX',Inter,system-ui}
+.pc-info .sid{color:#9fbed6;font-size:12px}
+
+/* ===== Stats (chips) ===== */
 .stats{
   position: fixed;
-  left:50%; transform: translateX(-50%);
-  bottom: 110px; /* altura del conjunto completo (ajústalo) */
-  display:flex; flex-wrap:wrap; gap:14px; justify-content:center; align-items:center;
-  width:min(1100px, 92vw);
-  margin:0; z-index:6; pointer-events:none;
+  left: 50%;
+  bottom: 110px;             /* <- sube/baja el conjunto de chips */
+  transform: translateX(-50%);
+  display: flex; flex-wrap: wrap; gap: 14px;
+  justify-content: center; align-items: center;
+  width: min(1100px, 92vw);
+  margin: 0; z-index: 6; pointer-events: none;
 }
 .stat{
   pointer-events:auto;
-  display:inline-flex; align-items:center; gap:10px;
-  padding:10px 14px; border-radius:14px;
+  display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;
   background: rgba(18,24,33,.65);
-  border:1px solid rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.10);
   box-shadow: 0 8px 18px rgba(0,0,0,.28);
   backdrop-filter: blur(8px) saturate(120%);
 }
-.stat .ic{ font-size:22px; filter:drop-shadow(0 2px 8px rgba(0,0,0,.6)); }
-.stat .k{ font-size:11px; color:#a7b8c9; letter-spacing:.6px; }
-.stat .v{ font-size:17px; font-weight:800; }
+.stat .ic{font-size:22px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.stat .k{font-size:11px;color:#a7b8c9;letter-spacing:.6px}
+.stat .v{font-size:17px;font-weight:800}
 
-/* ====== Tips y footer ====== */
-.foot{ display:flex; align-items:center; justify-content:flex-end; padding:12px 18px 20px; }
+/* ===== Footer ===== */
+.foot{display:flex;align-items:center;justify-content:flex-end;padding:12px 18px 20px}
 .tips{
-  position: fixed; left:50%; transform:translateX(-50%);
-  bottom:24px; z-index:6;
-  display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: 24px; z-index: 6;
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;
   pointer-events:none;
 }
 .tip{
   pointer-events:auto;
-  background:rgba(255,255,255,.06);
-  padding:8px 12px; border-radius:999px; white-space:nowrap;
-  font-family:'MontserratX', Inter, system-ui, Arial; font-weight:800; letter-spacing:.3px;
+  background:rgba(255,255,255,.06);padding:8px 12px;border-radius:999px;white-space:nowrap;
+  font-family:'MontserratX',Inter,system-ui,Arial; font-weight:800; letter-spacing:.3px;
 }
-.btn{
-  appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:800;
-  background:var(--glass); color:#eaf2ff; box-shadow:var(--shadow); cursor:pointer;
-}
-.btn:hover{ outline:2px solid rgba(155,226,255,.28); }
+.btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:800;
+  background:var(--glass2);color:#eaf2ff;box-shadow:var(--shadow);cursor:pointer}
+.btn:hover{outline:2px solid rgba(155,226,255,.28)}
 
-/* ====== Audio gate (overlay para autoplay en web) ====== */
-.audio-gate{
-  position:fixed; inset:0; z-index:9; display:grid; place-items:center;
-  background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
-  backdrop-filter: blur(6px);
-}
-.gate-card{ background:var(--glass); box-shadow:var(--shadow); border-radius:22px; padding:24px 22px; width:min(520px,92vw); text-align:center; }
-.gate-title{ font-family:'MontserratX', Inter, system-ui; font-weight:800; font-size:28px; margin-bottom:6px; }
-.gate-sub{ color:#b9c6d8; font-size:14px; margin-bottom:16px; }
-.gate-btn{ font-size:16px; padding:12px 18px; }
-
-/* ====== Responsivo ====== */
-@media (max-width: 980px){
-  .pct{ font-size:1rem; }
-  .pc-info .nick{ font-size:18px; }
-}
-@media (max-width: 560px){
-  .titles h1{ font-size:22px; }
-  .welcome{ font-size:1.15rem; bottom: 120px; }
-  .stats{ bottom: 86px; }
+/* Aviso de música bloqueada */
+.audio-hint{
+  position:fixed; right:16px; bottom:16px; z-index:5;
+  background:var(--glass2); backdrop-filter:blur(var(--blur));
+  border-radius:999px; padding:10px 14px; box-shadow:var(--shadow);
+  font-size:13px; color:#eaf2ff;
 }
 
-/* --- Separación clara entre STATS y TIPS --- */
-body .stats{
-  bottom: 120px !important;          /* antes 110 o 34; sube los chips */
-  z-index: 6 !important;             /* por encima de tips */
+/* Player card: posición bajo la barra (ajustá top para subir/bajar) */
+.player-card{
+  position: fixed; left: 50%;
+  top: calc(40vh + 58px);    /* <- acá movés el perfil de Steam */
+  transform: translateX(-50%);
+  z-index: 6;
 }
 
-body .tips{
-  position: fixed !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  bottom: 24px !important;           /* bien abajo, debajo de los stats */
-  z-index: 5 !important;             /* por debajo de los stats */
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-  justify-content: center !important;
-  align-items: center !important;
-  pointer-events: none;              /* el contenedor no bloquea clics */
+/* Bienvenid@ centrado entre perfil y stats */
+.welcome{
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: 110px;  /* entre perfil y chips (coincide con stats bottom) */
+  z-index: 6;
 }
 
-body .tip{
-  pointer-events: auto;              /* cada chip sí puede recibir hover/click */
-  font-family: 'MontserratX', Inter, system-ui, Arial !important;
-  font-weight: 800 !important;
-  letter-spacing: .3px !important;
-}
-
-/* === OVERRIDES FINALES (forzar layout correcto) === */
-
-/* Sección central (barra + “conectando”) */
-body section.center{
-  position: fixed !important;
-  left: 50% !important;
-  top: 32vh !important;
-  transform: translateX(-50%) !important;
-  width: min(1000px, 88vw) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  gap: 14px !important;
-  z-index: 5 !important;
-}
-
-/* Tarjeta de perfil: bajo la barra */
-body .player-card{
-  position: fixed !important;
-  left: 50% !important;
-  top: calc(32vh + 64px) !important; /* subilo/bajalo aquí */
-  transform: translateX(-50%) !important;
-  z-index: 6 !important;
-}
-
-/* “¡Bienvenid@!” en el medio entre perfil y stats */
-body .welcome{
-  position: fixed !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  bottom: 140px !important;          /* más grande = más arriba */
-  z-index: 6 !important;
-  margin: 0 !important;
-}
-
-/* Stats en una fila, abajo y centradas */
-body .stats{
-  position: fixed !important;
-  left: 50% !important;
-  bottom: 96px !important;            /* subí/bajá las fichas */
-  transform: translateX(-50%) !important;
-
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 14px !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  width: min(1100px, 92vw) !important;
-  margin: 0 !important;
-  z-index: 6 !important;
-
-  pointer-events: none !important;    /* no bloquea el fondo */
-}
-body .stats .stat{
-  pointer-events: auto !important;    /* cada chip sí captura hover/click */
-}
-
-/* Tips centrados, por debajo de las stats, con Montserrat */
-body .tips{
-  position: fixed !important;
-  left: 50% !important;
-  bottom: 28px !important;
-  transform: translateX(-50%) !important;
-
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-  justify-content: center !important;
-
-  z-index: 6 !important;
-  pointer-events: none !important;
-}
-body .tip{
-  pointer-events: auto !important;
-  font-family: 'MontserratX', Inter, system-ui, Arial !important;
-  font-weight: 800 !important;
-  letter-spacing: .3px !important;
-}
-
-/* (opcional) Botón de música a la derecha */
-body .foot{ justify-content: flex-end !important; }
-body .foot .btn#mute{ margin-left: auto !important; }
-
-
+/* Responsivo */
+@media (max-width: 980px){ .stats{width:min(1000px,95vw)} }
+@media (max-width: 560px){ .titles h1{font-size:22px} }
