@@ -1,11 +1,11 @@
-// ---- SINGLETON GUARD ----
+// ---- SINGLETON GUARD (evita doble init si se incluye 2 veces por error) ----
 if (window.__LS_INIT__) {
   console.warn('[LS] app.js ya estaba inicializado; ignoro este segundo include.');
 }
 window.__LS_INIT__ = true;
 
 // ===== Versión =====
-var APP_VERSION = 14.1;
+var APP_VERSION = 13.6;
 console.log('[LS] app.js cargado v' + APP_VERSION);
 
 // ===== Helper cache-busting para imágenes remotas =====
@@ -14,19 +14,20 @@ function withBust(url){
   return url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now();
 }
 
-// ===== CONFIG ÚNICO (editá acá nombres, tips, playlist, fondos) =====
+// ===== CONFIG ÚNICO (no dupliques este bloque) =====
 var CONFIG = {
   accent: '#39b4ff',
   accent2: '#9ee8ff',
 
-  // Título fijo (si querés usar el hostname del server, poné null)
+  // Título del servidor (fijo)
   forceTitle: "Quantum Pulse",
 
-  // Fondos: **usar dominio directo de Imgur** (i.imgur.com) + fallback local de GMod
+  // Fondos (ej.: 2 Imgur + fallback local)
   slides: [
-    [ withBust('https://i.imgur.com/GJKhdJk.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://i.imgur.com/0RgiH9t.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://i.imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ]
+    [ withBust('https://imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
+    [ withBust('https://imgur.com/K4RpwBm.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
+    [ withBust('https://imgur.com/GJKhdJk.jpg'), '' ],
+    // [ 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -47,22 +48,12 @@ var CONFIG = {
     list: [
       'asset://garrysmod/sound/loadscreen/music.wav',
       'asset://garrysmod/sound/loadscreen/tema2.wav'
+      // 'asset://garrysmod/sound/loadscreen/tema3.wav'
     ],
     src: 'asset://garrysmod/sound/loadscreen/music.wav',
     volume: 0.65
   }
 };
-
-// ===== Adaptación según entorno (WEB vs GMod) =====
-const WEB = !window.gmod; // en Pages true
-(function adaptForEnv(){
-  if (!WEB) return; // En GMod no tocamos rutas: siguen siendo asset://
-
-  // Música liviana para web
-  CONFIG.music = CONFIG.music || {};
-  CONFIG.music.list = ['/sound/loadscreen/music.ogg']; // o .mp3
-  if (CONFIG.music.volume == null) CONFIG.music.volume = 0.65;
-})();
 
 // ===== CSS variables =====
 var root = document.documentElement;
@@ -71,6 +62,11 @@ root.style.setProperty('--accent2', CONFIG.accent2);
 root.style.setProperty('--fade', CONFIG.fadeMs + 'ms');
 
 // ===== Helpers =====
+function tryPlay(audio){
+  var p; try { p = audio.play(); } catch(e){ return Promise.reject(e); }
+  if (p && typeof p.then === 'function') return p;
+  return Promise.resolve();
+}
 function safeMoney(n){
   var v = isFinite(Number(n)) ? Number(n) : 0;
   try {
@@ -114,6 +110,7 @@ function makeSlide(candidates, addKB){
   tryNext();
   return el;
 }
+
 var els = [];
 for (var i=0;i<slidesArr.length;i++){
   els.push(makeSlide(slidesArr[i], (i % CONFIG.kenburnsEvery) === 0));
@@ -121,7 +118,12 @@ for (var i=0;i<slidesArr.length;i++){
 for (i=0;i<els.length;i++){ bg.appendChild(els[i]); }
 var slideIdx = 0;
 if (els[0]) { els[0].classList.add('active'); els[0].style.opacity = '1'; }
-function nextSlide(){ if (!els.length) return; els[slideIdx]?.classList.remove('active'); slideIdx = (slideIdx + 1) % els.length; els[slideIdx]?.classList.add('active'); }
+function nextSlide(){
+  if (!els.length) return;
+  if (els[slideIdx]) els[slideIdx].classList.remove('active');
+  slideIdx = (slideIdx + 1) % els.length;
+  if (els[slideIdx]) els[slideIdx].classList.add('active');
+}
 setInterval(nextSlide, CONFIG.holdMs);
 
 // ===== Barra decorativa (progress) =====
@@ -139,24 +141,38 @@ var P=0;(function tick(){
   }
 })();
 
-// ===== Tips (render) =====
+// ===== Tips (render + rotación) =====
 var tipsEl=document.getElementById('tips');
 if (tipsEl){
-  for(var i=0;i<CONFIG.tips.length;i++){
+  var items=[];
+  for(i=0;i<CONFIG.tips.length;i++){
     var b=document.createElement('div');
     b.className='tip';
     b.textContent=CONFIG.tips[i];
     tipsEl.appendChild(b);
+    items.push(b);
+  }
+  if (items.length){
+    var ti=0;
+    items[0].classList.add('is-show');
+    setInterval(function(){
+      items[ti].classList.remove('is-show');
+      ti=(ti+1)%items.length;
+      items[ti].classList.add('is-show');
+    }, 6000);
   }
 }
 
-// ===== Logo robusto (WEB primero, luego GMod y fallback) =====
+// ===== Logo robusto =====
 (function setLogo(){
   var el = document.getElementById('logo');
   if (!el) return;
   var candidates = [
+    // 👇 Añadido para entorno web (repo estático)
     '/materials/loadscreen/logo.png',
     '/materials/loadscreen/logo.jpg',
+
+    // Rutas GMod + fallbacks que ya tenías
     'asset://garrysmod/materials/loadscreen/logo.png',
     'asset://garrysmod/materials/loadscreen/logo.jpg',
     'asset://garrysmod/resource/loadscreen/img/logo.png',
@@ -175,16 +191,21 @@ if (tipsEl){
     var url = candidates[i++];
     var test = new Image();
     test.onload = function(){
-      el.src = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
+      var bust = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
+      el.src = bust;
       console.log('[LS] OK logo', url, test.width + 'x' + test.height);
     };
-    test.onerror = function(){ tryNext(); };
+    test.onerror = function(){
+      console.warn('[LS] FAIL logo', url, '→ siguiente…');
+      tryNext();
+    };
+    console.log('[LS] TRY logo', url);
     test.src = url;
   }
   tryNext();
 })();
 
-// ===== Helper Título =====
+// ===== Helper central de Título =====
 function _applyTitle(srcHostname){
   var h1 = document.getElementById('title');
   var hasForce = (CONFIG.forceTitle !== null && CONFIG.forceTitle !== undefined);
@@ -192,11 +213,14 @@ function _applyTitle(srcHostname){
                        : (srcHostname || (h1 && h1.textContent) || 'QUANTUM PULSE');
   if (h1) h1.textContent = title;
   document.title = title + ' — Pantalla de Carga';
+  console.log('[LS] Título aplicado →', title, '| forceTitle =', hasForce ? JSON.stringify(CONFIG.forceTitle) : '(null)');
 }
-// Fade-in del DOM
+// Aplicar al cargar (estado base)
+_applyTitle();
+// Hacer que todo entre con fade una vez listo el DOM
 document.documentElement.classList.add('is-ready');
 
-// ===== Música (playlist + autoplay/mute) =====
+// ===== Música (WAV robusto con PLAYLIST) =====
 var muteBtn = document.getElementById('mute');
 var audio = document.getElementById('bgm');
 
@@ -204,11 +228,13 @@ var audio = document.getElementById('bgm');
   if (!CONFIG.music.enabled){ if (muteBtn) muteBtn.style.display='none'; return; }
   if (!audio){ console.error('[LS] Falta <audio id="bgm">'); if (muteBtn) muteBtn.style.display='none'; return; }
 
+  // --- Fuentes: usa list si existe; si no, cae a src ---
   var list = Array.isArray(CONFIG.music.list) && CONFIG.music.list.length
     ? CONFIG.music.list.slice()
-    : [ CONFIG.music.src || (audio.getAttribute('src') || '/sound/loadscreen/music.ogg') ];
+    : [ CONFIG.music.src || (audio.getAttribute('src') || 'asset://garrysmod/sound/loadscreen/music.wav') ];
 
   var idx = 0;
+
   function load(i){
     var src = list[i % list.length];
     audio.pause();
@@ -219,33 +245,54 @@ var audio = document.getElementById('bgm');
     audio.load();
     console.log('[LS] Audio src →', src, ' / abs:', audio.src);
   }
+
   function startFrom(i){
     idx = (i % list.length + list.length) % list.length;
     load(idx);
     audio.muted = false;
     audio.volume = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
-    audio.loop = false;
+    audio.loop = false; // para que haga "ended" y pase al siguiente
     var p = audio.play();
-    if (p && p.catch) p.catch(()=>{});
+    if (p && p.catch) p.catch(()=>{ /* autoplay bloqueado; se maneja abajo */ });
   }
-  audio.addEventListener('ended', function(){ idx = (idx + 1) % list.length; startFrom(idx); });
+
+  // Logs útiles
+  audio.addEventListener('loadedmetadata', function(){ console.log('[LS] loadedmetadata OK. duration=', audio.duration); });
+  audio.addEventListener('canplaythrough', function(){ console.log('[LS] canplaythrough'); });
   audio.addEventListener('error', function(){
+    var e=audio.error, map={1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
+    console.error('[LS] AUDIO ERROR code', e?e.code:'n/a', e?(map[e.code]||'UNKNOWN'):'UNKNOWN', '→', audio.currentSrc || '(sin src)');
+    // Si falla esta pista, intento siguiente
     idx = (idx + 1) % list.length;
     load(idx);
   });
 
-  startFrom(0);
-  (audio.play() || Promise.reject()).then(()=>{ audio.muted = false; })
-    .catch(()=>{ function kick(){ startFrom(idx); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); }
-                 window.addEventListener('pointerdown', kick, {once:true});
-                 window.addEventListener('keydown',     kick, {once:true}); });
+  // Al terminar una pista, pasa a la siguiente
+  audio.addEventListener('ended', function(){
+    idx = (idx + 1) % list.length;
+    startFrom(idx);
+  });
 
+  // Intento autoplay; si se bloquea, arranca al clic/tecla
+  startFrom(0);
+  (audio.play() || Promise.reject()).then(()=>{
+    audio.muted = false;
+    console.log('[LS] Autoplay OK (playlist)');
+  }).catch(()=>{
+    console.warn('[LS] Autoplay bloqueado — clic/tecla para iniciar playlist');
+    function kick(){ startFrom(idx); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); }
+    window.addEventListener('pointerdown', kick, {once:true});
+    window.addEventListener('keydown',     kick, {once:true});
+  });
+
+  // Botón Mute/Play
   if (muteBtn){
     muteBtn.addEventListener('click', function(){
       if (audio.paused) {
         var target = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
         audio.volume = 0.0;
-        var p = audio.play(); if (p && p.catch) p.catch(()=>{});
+        var p = audio.play();
+        if (p && p.catch) p.catch(()=>{});
         var t = setInterval(function(){
           audio.volume = Math.min(target, audio.volume + (target/12));
           if (audio.volume >= target) clearInterval(t);
@@ -262,68 +309,9 @@ var audio = document.getElementById('bgm');
   }
 })();
 
-/* ---------------------- AVATAR DE STEAM (ARREGLADO) ---------------------- */
-/* Estrategia:
-   1) Si Lua manda onAvatar(url) → usarlo con cache-bust (se ve siempre).
-   2) Si todavía no llegó, mostrar inmediatamente un placeholder local
-      (/materials/loadscreen/avatar.png) si existe.
-   3) Si tampoco existe, generar una inicial con canvas (color acento).
-*/
-
-// intenta mostrar un placeholder local (si existe)
-function tryLocalAvatarPlaceholder(imgEl, done){
-  var candidates = [
-    '/materials/loadscreen/avatar.png',
-    '/materials/loadscreen/avatar.jpg',
-    'img/avatar.png',
-    'img/avatar.jpg'
-  ];
-  var i = 0;
-  function tryNext(){
-    if (i >= candidates.length){ if (done) done(false); return; }
-    var url = candidates[i++];
-    var test = new Image();
-    test.onload = function(){
-      imgEl.src = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
-      if (done) done(true);
-    };
-    test.onerror = function(){ tryNext(); };
-    test.src = url;
-  }
-  tryNext();
-}
-
-// genera un avatar con la inicial del nick
-function paintInitialAvatar(imgEl, letter){
-  var cvs = document.createElement('canvas'); cvs.width = cvs.height = 128;
-  var ctx = cvs.getContext('2d');
-  ctx.fillStyle = 'rgba(20,28,38,1)'; ctx.fillRect(0,0,128,128);
-  var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-  ctx.fillStyle = accent && accent.trim ? accent.trim() : CONFIG.accent;
-  ctx.beginPath(); ctx.arc(64,64,54,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 64px MontserratX, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(letter, 64, 70);
-  imgEl.src = cvs.toDataURL('image/png');
-}
-
-function ensureAvatarVisible(nick){
-  var aimg = document.getElementById('avatar');
-  if (!aimg) return;
-  // si ya hay uno externo aplicado, no tocamos
-  if (aimg.getAttribute('data-external') === '1') return;
-  if (aimg.src && aimg.src.startsWith('data:')) return;
-
-  // 1) probar placeholder local → si no hay, 2) dibujar inicial
-  tryLocalAvatarPlaceholder(aimg, function(ok){
-    if (!ok) {
-      var letter = (nick||'J').charAt(0).toUpperCase();
-      paintInitialAvatar(aimg, letter);
-    }
-  });
-}
-
 // ===== GMOD bridge =====
 window.onGMOD = function(data){
+  // Título (usa forceTitle si está)
   _applyTitle(data && data.hostname);
 
   var sub = document.getElementById('subtitle');
@@ -341,22 +329,32 @@ window.onGMOD = function(data){
   var jobEl =document.getElementById('st-rank'); if(jobEl)  jobEl.textContent  = job;
   var monEl =document.getElementById('st-money');if(monEl)  monEl.textContent  = safeMoney(money);
 
-  // Garantizar que haya algo visible ya mismo
-  ensureAvatarVisible(nick);
+  // Avatar fallback (inicial) si no llega onAvatar
+  var aimg = document.getElementById('avatar');
+  if (aimg && (!aimg.getAttribute('data-external') || !aimg.src)){
+    var letter = nick.charAt(0).toUpperCase();
+    var cvs = document.createElement('canvas'); cvs.width = cvs.height = 128;
+    var ctx = cvs.getContext('2d');
+    ctx.fillStyle = 'rgba(20,28,38,1)'; ctx.fillRect(0,0,128,128);
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+    ctx.fillStyle = accent && accent.trim ? accent.trim() : CONFIG.accent;
+    ctx.beginPath(); ctx.arc(64,64,54,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 64px MontserratX, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(letter, 64, 70);
+    aimg.src = cvs.toDataURL('image/png');
+  }
 };
-
-// Tick (solo sesión)
 window.onGMODTick = function(data){
   var t = Math.max(0, Number((data && data.session) || 0));
   var h = Math.floor(t/3600), m = Math.floor((t%3600)/60);
   var timeEl=document.getElementById('st-time'); if(timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
 };
 
-// Avatar desde Lua (definitivo)
+// ===== Avatar de Steam (desde Lua) =====
 window.onAvatar = function(url){
   try{
     var img = document.getElementById('avatar');
-    if (!img || !url) return;
+    if (!img) return;
     var bust = (url.indexOf('?') === -1) ? (url + '?v=' + Date.now()) : (url + '&v=' + Date.now());
     img.crossOrigin = 'anonymous';
     img.src = bust;
@@ -364,31 +362,88 @@ window.onAvatar = function(url){
   }catch(e){ console.warn('[LS] onAvatar error:', e && e.message); }
 };
 
-// FX partículas (sutil)
+// ===== FX partículas (sutil y en movimiento) =====
 (function(){
   var canvas = document.getElementById('fx');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
-  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize(); window.addEventListener('resize', resize);
 
-  var N = 60, parts = [];
-  for (var i=0; i<N; i++){
-    parts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: 1+Math.random()*2, a: .28+Math.random()*.25, vx: -0.12+Math.random()*0.24, vy: -0.12+Math.random()*0.24 });
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var N = 60;
+  var parts = [];
+  for (var i=0; i<N; i++){
+    parts.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: 1.0 + Math.random()*2.0,
+      a: 0.28 + Math.random()*0.25,
+      vx: (-0.12 + Math.random()*0.24),
+      vy: (-0.12 + Math.random()*0.24)
+    });
+  }
+
   function step(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     for (var i=0;i<parts.length;i++){
-      var p=parts[i]; p.x+=p.vx; p.y+=p.vy;
+      var p=parts[i];
+      p.x += p.vx; p.y += p.vy;
       if (p.x < -12) p.x = canvas.width+12;
       if (p.x > canvas.width+12) p.x = -12;
       if (p.y < -12) p.y = canvas.height+12;
       if (p.y > canvas.height+12) p.y = -12;
-      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*8);
-      g.addColorStop(0, 'rgba(57,180,255,'+p.a+')'); g.addColorStop(1, 'rgba(57,180,255,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r*8, 0, Math.PI*2); ctx.fill();
+
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*8);
+      grad.addColorStop(0, 'rgba(57,180,255,'+p.a+')');
+      grad.addColorStop(1, 'rgba(57,180,255,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r*8, 0, Math.PI*2);
+      ctx.fill();
     }
     requestAnimationFrame(step);
   }
   step();
 })();
+
+// --- Debug: tecla N para siguiente slide (podés borrar si no lo usás) ---
+window.addEventListener('keydown', function(ev){
+  if (ev.key && ev.key.toLowerCase() === 'n' && typeof nextSlide === 'function') nextSlide();
+});
+
+// === Playtime total (persistente) que manda el servidor ===
+window.__QP_BASE_TOTAL__ = 0; // segundos persistentes (PData) enviados por sv_playtime.lua
+
+// Server → JS: total persistente (en segundos). Lo guarda y refresca el stat.
+window.onPlaytime = function(totalSeconds) {
+  try {
+    if (isFinite(totalSeconds)) {
+      window.__QP_BASE_TOTAL__ = Math.max(0, Number(totalSeconds) || 0);
+      // refresco inmediato del stat, sumando lo que ya llevamos de sesión si lo tenemos
+      if (typeof window.__QP_SESSION_SEC__ === 'number') {
+        updateTimeStat(window.__QP_BASE_TOTAL__ + window.__QP_SESSION_SEC__);
+      } else {
+        updateTimeStat(window.__QP_BASE_TOTAL__);
+      }
+    }
+  } catch (e) { console.warn('[LS] onPlaytime error:', e && e.message); }
+};
+
+// Tu tick actual (sesión): guardamos la sesión en segundos y refrescamos con base+sesión
+function updateTimeStat(totalSec) {
+  var h = Math.floor(totalSec/3600), m = Math.floor((totalSec%3600)/60);
+  var timeEl = document.getElementById('st-time');
+  if (timeEl) timeEl.textContent = h + ' hs y ' + m + ' m';
+}
+
+// Si ya tenías window.onGMODTick, solo agrega estas 2 líneas:
+window.onGMODTick = function (data) {
+  var t = Math.max(0, Number((data && data.session) || 0)); // segundos de la sesión actual
+  window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
+  updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
+};
