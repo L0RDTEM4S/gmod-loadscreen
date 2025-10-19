@@ -5,72 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Loadscreen</title>
 
-  <!-- CSS correcto para Pages -->
-  <link rel="stylesheet" href="resource/loadscreen/style.css?v=web5" />
+  <!-- CSS local (misma carpeta) -->
+  <link rel="stylesheet" href="./style.css?v=build4" />
 </head>
 <body>
+  <!-- Fondo + FX -->
   <div id="bg"></div>
-  <div class="overlay"></div>
   <canvas id="fx"></canvas>
-  <div class="vignette"></div>
+  <div class="overlay"></div>
 
-  <main class="wrap">
-    <header class="top">
+  <!-- UI principal -->
+  <div class="wrap">
+    <!-- Header: logo + título -->
+    <div class="top">
       <div class="brand card">
-        <img id="logo" src="resource/loadscreen/img/logo.png" alt="logo" />
+        <img id="logo" alt="logo" src="" />
         <div class="titles">
           <h1 id="title">Quantum Pulse</h1>
           <p id="subtitle">Gamemode: —</p>
         </div>
       </div>
-    </header>
+    </div>
 
+    <!-- Centro: barra de progreso + mensajes -->
     <section class="center">
-      <div class="progress card" aria-label="Progreso">
-        <i id="bar"></i>
-        <span id="pct" class="pct">0%</span>
-      </div>
+      <h2 class="welcome">¡Bienvenid@!</h2>
+
       <p class="loading" id="loading">CONECTANDO CON EL SERVIDOR...</p>
-      <p class="welcome" id="welcome">¡Bienvenid@!</p>
-    </section>
 
-    <section class="player-card card" id="pcard">
-      <img class="avatar" id="avatar" alt="avatar" />
-      <div class="pc-info">
-        <div class="hi">Hola de nuevo</div>
-        <div class="nick" id="pc-nick">Jugador</div>
-        <div class="sid" id="pc-sid">SteamID</div>
+      <div class="progress" aria-label="Progreso">
+        <i id="bar"></i>
+        <span class="pct" id="pct">0%</span>
+      </div>
+
+      <!-- Tarjeta de perfil -->
+      <div class="player-card card">
+        <img id="avatar" class="avatar" alt="avatar" src="img/avatar-fallback.png" />
+        <div class="pc-info">
+          <div class="hi">Hola de nuevo</div>
+          <div class="nick" id="pc-nick">Jugador</div>
+          <div class="sid" id="pc-sid">SteamID</div>
+        </div>
       </div>
     </section>
 
-    <section class="stats">
-      <div class="stat card"><div class="ic">⚡</div><div class="kv"><div class="k">DINERO</div><div class="v" id="st-money">—</div></div></div>
-      <div class="stat card"><div class="ic">⏱️</div><div class="kv"><div class="k">TIEMPO</div><div class="v" id="st-time">—</div></div></div>
-      <div class="stat card"><div class="ic">⭐</div><div class="kv"><div class="k">RANGO / JOB</div><div class="v" id="st-rank">—</div></div></div>
-      <div class="stat card"><div class="ic">🗺️</div><div class="kv"><div class="k">MAPA</div><div class="v" id="st-map">—</div></div></div>
-    </section>
+    <!-- Stats (abajo) -->
+    <div class="stats">
+      <div class="stat card">
+        <div class="ic">⚡</div>
+        <div class="kv">
+          <div class="k">DINERO</div>
+          <div class="v" id="st-money">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <div class="ic">⏱️</div>
+        <div class="kv">
+          <div class="k">TIEMPO</div>
+          <div class="v" id="st-time">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <div class="ic">⭐</div>
+        <div class="kv">
+          <div class="k">RANGO / JOB</div>
+          <div class="v" id="st-rank">—</div>
+        </div>
+      </div>
+      <div class="stat card">
+        <div class="ic">🗺️</div>
+        <div class="kv">
+          <div class="k">MAPA</div>
+          <div class="v" id="st-map">—</div>
+        </div>
+      </div>
+    </div>
 
-    <footer class="foot">
+    <!-- Footer: tips + botón música -->
+    <div class="foot">
       <div class="tips" id="tips"></div>
-      <button class="btn" id="mute" style="margin-left:auto">🔊 Música</button>
-    </footer>
-  </main>
-
-  <!-- Gate autoplay (se muestra si el navegador bloquea el audio) -->
-  <div class="audio-gate" id="audio-gate" style="display:none;">
-    <div class="gate-card">
-      <div class="gate-title">¿Listo para empezar?</div>
-      <div class="gate-sub">Hacé clic para iniciar la música.</div>
-      <button class="btn gate-btn" id="gate-play">Reproducir y continuar</button>
+      <button class="btn" id="mute">🔊 Música</button>
     </div>
   </div>
 
-  <!-- Audio: ruta válida para Pages y para el servidor -->
-  <audio id="bgm" preload="auto" src="sound/loadscreen/music.wav"></audio>
+  <!-- Audio (para web usará ./sound/... desde app.js) -->
+  <audio id="bgm" preload="auto"></audio>
 
-  <!-- JS correcto para Pages -->
-  <script src="resource/loadscreen/app.js?v=web5" defer></script>
+  <!-- JS local (misma carpeta) -->
+  <script src="./app.js?v=build4" defer></script>
   <script>
+    // En GMod el HTML llama gmod.Ready() desde Lua; en web no es necesario.
     if (window.gmod && typeof gmod.Ready === 'function') gmod.Ready();
   </script>
 </body>
