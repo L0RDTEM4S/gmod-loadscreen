@@ -6,7 +6,49 @@
   <title>Loadscreen</title>
 
   <!-- CSS local (mismo repo) -->
-  <link rel="stylesheet" href="./style.css?v=web42" />
+  <link rel="stylesheet" href="./style.css?v=web100" />
+
+  <!-- ===== OVERRIDES FINALES (cargan al final para ganar prioridad) ===== -->
+  <style>
+    /* Sube las stats y re-activa interacciones */
+    body .stats{
+      position: fixed !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: 110px !important;          /* ← ajustá altura acá */
+      z-index: 6000 !important;
+      pointer-events: auto !important;    /* vuelven a recibir hover/click */
+    }
+    body .stats .stat{ pointer-events: auto !important; }
+
+    /* El texto ¡Bienvenid@! centrado entre perfil y stats */
+    body .welcome{
+      position: fixed !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: 160px !important;           /* un poco por arriba de las stats */
+      z-index: 8000 !important;           /* entre perfil (9000) y stats (6000) */
+      margin: 0 !important;
+    }
+
+    /* El perfil siempre por encima de todo lo anterior */
+    body .player-card{
+      position: fixed !important;
+      top: calc(40vh + 58px) !important;  /* si querés subir/bajar, tocá acá */
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 9000 !important;           /* > welcome y > stats */
+    }
+
+    /* El contenedor de tips no bloquea clics del juego;
+       cada chip sí puede recibir click/hover. */
+    body .tips{ pointer-events: none !important; }
+    body .tip { pointer-events: auto !important; }
+
+    /* Botón de música pegado a la derecha del footer */
+    body .foot{ justify-content: flex-end !important; }
+    body .foot .btn#mute{ margin-left: auto !important; }
+  </style>
 </head>
 <body>
   <!-- Fondo + overlay -->
@@ -94,7 +136,7 @@
   <audio id="bgm" preload="auto"></audio>
 
   <!-- JS local (mismo repo) -->
-  <script src="./app.js?v=web1" defer></script>
+  <script src="./app.js?v=web100" defer></script>
 
   <!-- Shim: si existe gmod.Ready() lo llamamos; en web no hace nada malo -->
   <script>
@@ -106,4 +148,3 @@
   </script>
 </body>
 </html>
-
