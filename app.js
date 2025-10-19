@@ -1,4 +1,37 @@
 // ---- SINGLETON GUARD (evita doble init si se incluye 2 veces por error) ----
+// Detectar entorno
+const WEB = !window.gmod;
+
+// Si estás en Pages, usa archivos del repo (relativos)
+// Si estás en GMod, usa asset:// como ya tenías
+if (typeof CONFIG !== 'undefined') {
+  // Backgrounds (si usás Imgur ya te andan igual en web y juego)
+  // Si querés usar los que subiste al repo:
+  // CONFIG.slides = [
+  //   ['./materials/loadscreen/bg1.jpg'],
+  //   ['./materials/loadscreen/bg2.jpg'],
+  //   ['./materials/loadscreen/bg3.jpg']
+  // ];
+
+  // Logo “materials” (cuando no usas Imgur para el logo)
+  // En web:
+  // document.getElementById('logo')?.setAttribute('src','./materials/loadscreen/logo.png');
+
+  // Playlist según entorno
+  CONFIG.music = CONFIG.music || {};
+  CONFIG.music.list = WEB
+    ? ['./sound/loadscreen/music.ogg']     // comprimido para Pages
+    : (CONFIG.music.list && CONFIG.music.list.length
+        ? CONFIG.music.list
+        : ['asset://garrysmod/sound/loadscreen/music.wav']); // WAV local en GMod
+
+  // Volumen como lo tenías
+  if (CONFIG.music.volume == null) CONFIG.music.volume = 0.65;
+}
+
+
+
+
 if (window.__LS_INIT__) {
   console.warn('[LS] app.js ya estaba inicializado; ignoro este segundo include.');
 }
@@ -444,3 +477,4 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
+
