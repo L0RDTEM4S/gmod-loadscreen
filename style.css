@@ -230,3 +230,31 @@ section.center .loading{
   .welcome{ font-size:1.15rem; bottom: 120px; }
   .stats{ bottom: 86px; }
 }
+
+/* --- Separación clara entre STATS y TIPS --- */
+body .stats{
+  bottom: 120px !important;          /* antes 110 o 34; sube los chips */
+  z-index: 6 !important;             /* por encima de tips */
+}
+
+body .tips{
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 24px !important;           /* bien abajo, debajo de los stats */
+  z-index: 5 !important;             /* por debajo de los stats */
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  pointer-events: none;              /* el contenedor no bloquea clics */
+}
+
+body .tip{
+  pointer-events: auto;              /* cada chip sí puede recibir hover/click */
+  font-family: 'MontserratX', Inter, system-ui, Arial !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+}
+
