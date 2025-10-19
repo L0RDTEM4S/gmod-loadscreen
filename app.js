@@ -188,21 +188,41 @@ if (tipsEl){
   }
 }
 
-// ===== Logo robusto =====
-(function setLogo(){
+// ===== Logo robusto (soporta GMod y Web) =====
+(function setLogo() {
   var el = document.getElementById('logo');
   if (!el) return;
-  var candidates = [
+
+  var WEB = !window.gmod;
+
+  // Si querés forzar un logo específico (ej. Imgur), podés setear:
+  // CONFIG.logoUrl = 'https://i.imgur.com/xxxxxxx.png';
+  var candidates = [];
+
+  if (CONFIG.logoUrl) candidates.push(CONFIG.logoUrl);
+
+  // Rutas para WEB (GitHub Pages, etc.)
+  if (WEB) {
+    candidates.push(
+      './materials/loadscreen/logo.png',
+      './img/logo.png',
+      './logo.png',
+      'materials/loadscreen/logo.png', // por si cargan sin "./"
+      'img/logo.png'
+    );
+  }
+
+  // Rutas para el juego (asset://)
+  candidates.push(
     'asset://garrysmod/materials/loadscreen/logo.png',
     'asset://garrysmod/materials/loadscreen/logo.jpg',
     'asset://garrysmod/resource/loadscreen/img/logo.png',
-    'asset://garrysmod/resource/loadscreen/img/logo.jpg',
-    'img/logo.png',
-    'img/logo.jpg'
-  ];
+    'asset://garrysmod/resource/loadscreen/img/logo.jpg'
+  );
+
   var i = 0;
-  function tryNext(){
-    if (i >= candidates.length){
+  function tryNext() {
+    if (i >= candidates.length) {
       console.error('[LS] Logo no encontrado en rutas conocidas.');
       el.style.outline = '1px dashed rgba(255,255,255,.25)';
       el.style.outlineOffset = '4px';
@@ -210,12 +230,12 @@ if (tipsEl){
     }
     var url = candidates[i++];
     var test = new Image();
-    test.onload = function(){
+    test.onload = function () {
       var bust = url + (url.indexOf('?') === -1 ? '?v=' : '&v=') + Date.now();
       el.src = bust;
       console.log('[LS] OK logo', url, test.width + 'x' + test.height);
     };
-    test.onerror = function(){
+    test.onerror = function () {
       console.warn('[LS] FAIL logo', url, '→ siguiente…');
       tryNext();
     };
@@ -224,6 +244,7 @@ if (tipsEl){
   }
   tryNext();
 })();
+
 
 // ===== Helper de Título =====
 function _applyTitle(srcHostname){
@@ -448,3 +469,4 @@ window.onGMODTick = function (data) {
 window.addEventListener('keydown', function(ev){
   if (ev.key && ev.key.toLowerCase() === 'n' && typeof nextSlide === 'function') nextSlide();
 });
+
