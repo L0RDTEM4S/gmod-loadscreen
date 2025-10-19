@@ -5,7 +5,7 @@ if (window.__LS_INIT__) {
 window.__LS_INIT__ = true;
 
 // ===== Versión =====
-var APP_VERSION = 13.6;
+var APP_VERSION = 13.7;
 console.log('[LS] app.js cargado v' + APP_VERSION);
 
 // ===== Helper cache-busting para imágenes remotas =====
@@ -22,12 +22,13 @@ var CONFIG = {
   // Título del servidor (fijo)
   forceTitle: "Quantum Pulse",
 
-  // Fondos (ej.: 2 Imgur + fallback local)
+  // Fondos (primero intenta Imgur con cache-bust; fallback local para GMod)
   slides: [
-    [ withBust('https://imgur.com/l0cwEYM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://imgur.com/K4RpwBm.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://imgur.com/GJKhdJk.jpg'), '' ],
-    // [ 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
+    [ withBust('https://imgur.com/9rfDLhM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
+    [ withBust('https://imgur.com/en0VJuK.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
+    [ withBust('https://imgur.com/Nq8cPAb.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
+    [ withBust('https://imgur.com/inLLgan.jpg'), 'asset://garrysmod/materials/loadscreen/bg4.jpg' ],
+    [ withBust('https://imgur.com/MlbbVX0.jpg'), 'asset://garrysmod/materials/loadscreen/bg5.jpg' ]
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -168,11 +169,11 @@ if (tipsEl){
   var el = document.getElementById('logo');
   if (!el) return;
   var candidates = [
-    // 👇 Añadido para entorno web (repo estático)
+    // WEB (Pages/Repo estático) — primero
     '/materials/loadscreen/logo.png',
     '/materials/loadscreen/logo.jpg',
 
-    // Rutas GMod + fallbacks que ya tenías
+    // GMod + fallbacks clásicos
     'asset://garrysmod/materials/loadscreen/logo.png',
     'asset://garrysmod/materials/loadscreen/logo.jpg',
     'asset://garrysmod/resource/loadscreen/img/logo.png',
