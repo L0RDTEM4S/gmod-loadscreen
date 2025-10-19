@@ -3,56 +3,78 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quantum Pulse — Loadscreen</title>
+  <title>Loadscreen</title>
 
-  <!-- Tu CSS local, sin asset:// -->
-  <link rel="stylesheet" href="./style.css?v=web2" />
-  <!-- Montserrat como respaldo web por si tu TTF no carga -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+  <!-- CSS relativo: sirve en web y en juego -->
+  <link rel="stylesheet" href="style.css?v=web4" />
 </head>
 <body>
-  <!-- Fondo + overlay (no toqué estructura) -->
-  <div id="bg"></div>
+  <!-- Fondo y capa -->
+  <div id="bg"><!-- Slides via app.js --></div>
   <div class="overlay"></div>
+  <canvas id="fx"></canvas>
+  <div class="vignette"></div>
 
-  <!-- === TU UI EXISTENTE AQUÍ (tal cual la tenías) === -->
-  <!-- (no lo repito para no pisarte nada) -->
+  <!-- UI principal (esto faltaba en el HTML “recortado”) -->
+  <main class="wrap">
+    <header class="top">
+      <div class="brand card">
+        <img id="logo" src="img/logo.png" alt="logo" />
+        <div class="titles">
+          <h1 id="title">Quantum Pulse</h1>
+          <p id="subtitle">Gamemode: —</p>
+        </div>
+      </div>
+    </header>
 
-  <!-- Botón música + <audio> usando ruta del repo -->
-  <button class="btn" id="mute">🔊 Música</button>
-  <audio id="bgm" preload="auto" src="./sound/loadscreen/music.ogg"></audio>
-  <!-- Si subiste WAV en el repo y quieres probarlo:
-       <audio id="bgm" preload="auto" src="./sound/loadscreen/music.wav"></audio> -->
+    <section class="center">
+      <div class="progress card" aria-label="Progreso">
+        <i id="bar"></i>
+        <span id="pct" class="pct">0%</span>
+      </div>
+      <p class="loading" id="loading">CONECTANDO CON EL SERVIDOR...</p>
+      <p class="welcome" id="welcome">¡Bienvenid@!</p>
+    </section>
 
-  <!-- “Gate” para iniciar audio en web (clic para empezar) -->
-  <div class="audio-gate" id="gate" style="display:none">
+    <section class="player-card card" id="pcard">
+      <img class="avatar" id="avatar" alt="avatar" />
+      <div class="pc-info">
+        <div class="hi">Hola de nuevo</div>
+        <div class="nick" id="pc-nick">Jugador</div>
+        <div class="sid" id="pc-sid">SteamID</div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat card"><div class="ic">⚡</div><div class="kv"><div class="k">DINERO</div><div class="v" id="st-money">—</div></div></div>
+      <div class="stat card"><div class="ic">⏱️</div><div class="kv"><div class="k">TIEMPO</div><div class="v" id="st-time">—</div></div></div>
+      <div class="stat card"><div class="ic">⭐</div><div class="kv"><div class="k">RANGO / JOB</div><div class="v" id="st-rank">—</div></div></div>
+      <div class="stat card"><div class="ic">🗺️</div><div class="kv"><div class="k">MAPA</div><div class="v" id="st-map">—</div></div></div>
+    </section>
+
+    <footer class="foot">
+      <div class="tips" id="tips"></div>
+      <!-- Botón música a la DERECHA -->
+      <button class="btn" id="mute" style="margin-left:auto">🔊 Música</button>
+    </footer>
+  </main>
+
+  <!-- Gate para autoplay (solo se muestra si el navegador bloquea) -->
+  <div class="audio-gate" id="audio-gate" style="display:none;">
     <div class="gate-card">
       <div class="gate-title">¿Listo para empezar?</div>
       <div class="gate-sub">Hacé clic para iniciar la música.</div>
-      <button class="btn gate-btn" id="gateGo">Reproducir y continuar</button>
+      <button class="btn gate-btn" id="gate-play">Reproducir y continuar</button>
     </div>
   </div>
 
-  <!-- JS local, sin asset:// -->
-  <script src="./app.js?v=web2" defer></script>
+  <!-- Audio: usa carpeta /sound en juego y en Pages -->
+  <audio id="bgm" preload="auto" src="sound/loadscreen/music.wav"></audio>
+
+  <!-- JS relativo (funciona en web y en juego). gmod.Ready existe solo en juego -->
+  <script src="app.js?v=web4" defer></script>
   <script>
-    // Si estamos en web (no existe window.gmod), mostramos la compuerta de audio
-    window.addEventListener('DOMContentLoaded', () => {
-      if (!window.gmod) {
-        const gate = document.getElementById('gate');
-        const go = document.getElementById('gateGo');
-        const audio = document.getElementById('bgm');
-        if (gate && go && audio) {
-          gate.style.display = 'grid';
-          go.addEventListener('click', async () => {
-            try { await audio.play(); } catch {}
-            gate.style.display = 'none';
-          }, { once: true });
-        }
-      } else if (typeof gmod.Ready === 'function') {
-        gmod.Ready();
-      }
-    });
+    if (window.gmod && typeof gmod.Ready === 'function') gmod.Ready();
   </script>
 </body>
 </html>
