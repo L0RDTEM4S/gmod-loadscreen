@@ -118,10 +118,12 @@ body{
 .pc-info .sid{color:#9fbed6;font-size:12px}
 
 /* ===== Stats (chips) ===== */
+/* === STATS (chips) abajo, centradas === */
 .stats{
   position: fixed;
   left: 50%;
-  bottom: 110px;             /* <- sube/baja el conjunto de chips */
+  /* SUBIR un poco los chips: antes 110px */
+  bottom: 150px;                  /* <- ajustá a gusto */
   transform: translateX(-50%);
   display: flex; flex-wrap: wrap; gap: 14px;
   justify-content: center; align-items: center;
@@ -176,10 +178,12 @@ body{
 /* Bienvenid@ centrado entre perfil y stats */
 .welcome{
   position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: 110px;  /* entre perfil y chips (coincide con stats bottom) */
+  /* Que quede por encima de los chips y debajo del perfil */
+  bottom: 210px;                  /* <- probá 190–230px según te guste */
   z-index: 6;
 }
 
 /* Responsivo */
 @media (max-width: 980px){ .stats{width:min(1000px,95vw)} }
 @media (max-width: 560px){ .titles h1{font-size:22px} }
+
