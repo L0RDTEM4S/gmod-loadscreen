@@ -28,7 +28,10 @@ var CONFIG = {
     [ withBust('https://imgur.com/en0VJuK.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
     [ withBust('https://imgur.com/Nq8cPAb.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
     [ withBust('https://imgur.com/inLLgan.jpg'), 'asset://garrysmod/materials/loadscreen/bg4.jpg' ],
-    [ withBust('https://imgur.com/MlbbVX0.jpg'), 'asset://garrysmod/materials/loadscreen/bg5.jpg' ]
+    [ withBust('https://imgur.com/MlbbVX0.jpg'), 'asset://garrysmod/materials/loadscreen/bg5.jpg' ],
+    [ withBust('https://imgur.com/j0PwnEn.jpg'), 'asset://garrysmod/materials/loadscreen/bg6.jpg' ],
+    [ withBust('https://imgur.com/KZU3bUJ.jpg'), 'asset://garrysmod/materials/loadscreen/bg7.jpg' ],
+    [ withBust('https://imgur.com/Q9bBCcd.jpg'), 'asset://garrysmod/materials/loadscreen/bg8.jpg' ],
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -448,3 +451,4 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
+
