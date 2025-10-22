@@ -50,8 +50,8 @@ var CONFIG = {
   music: {
     enabled: true,
     list: [
+      'asset://garrysmod/sound/loadscreen/music.wav',
       'asset://garrysmod/sound/loadscreen/tema2.wav',
-      'asset://garrysmod/sound/loadscreen/music.wav'
       // 'asset://garrysmod/sound/loadscreen/tema3.wav'
     ],
     src: 'asset://garrysmod/sound/loadscreen/music.wav',
@@ -451,5 +451,6 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
+
 
 
