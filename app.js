@@ -24,6 +24,11 @@ var CONFIG = {
 
   // Fondos (primero intenta Imgur con cache-bust; fallback local para GMod)
   slides: [
+    [ withBust('https://imgur.com/u0sY7Kw.jpg'),
+    [ withBust('https://imgur.com/mxKjk67.jpg'),
+    [ withBust('https://imgur.com/UXUWJEf.jpg'),
+    [ withBust('https://imgur.com/XqGC5S3.jpg'),
+    [ withBust('https://imgur.com/2W4STLA.jpg'), 
     [ withBust('https://imgur.com/9rfDLhM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
     [ withBust('https://imgur.com/en0VJuK.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
     [ withBust('https://imgur.com/Nq8cPAb.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
@@ -451,6 +456,7 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
+
 
 
 
