@@ -51,18 +51,23 @@ var CONFIG = {
     'Tu presencia vale mucho!'
   ],
 
-  // 🎵 Playlist (loop)
-  music: {
-    enabled: true,
-    list: [
-      'asset://garrysmod/sound/loadscreen/music.wav',
-      // 'asset://garrysmod/sound/loadscreen/tema2.wav',
-      // 'asset://garrysmod/sound/loadscreen/tema3.wav'
-    ],
-    src: 'asset://garrysmod/sound/loadscreen/music.wav',
-    volume: 0.65
-  }
-};
+// 🎵 Playlist (loop)
+music: {
+  enabled: true,
+  // NOTA: en loadscreen web (sv_loadingurl) hay que servir el audio por HTTP(s)
+  // Subí /sound/loadscreen/music.ogg al mismo repo (Pages)
+  list: (typeof window.gmod === 'undefined')
+    ? ['/sound/loadscreen/music.ogg'] // WEB: archivo del mismo dominio (sin CORS)
+    : [
+        'asset://garrysmod/sound/loadscreen/music.wav', // GMod DHTML local
+        // 'asset://garrysmod/sound/loadscreen/tema2.wav',
+      ],
+  src: (typeof window.gmod === 'undefined')
+    ? '/sound/loadscreen/music.ogg'
+    : 'asset://garrysmod/sound/loadscreen/music.wav',
+  volume: 0.65
+}
+
 
 // ===== CSS variables =====
 var root = document.documentElement;
@@ -456,6 +461,7 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
+
 
 
 
