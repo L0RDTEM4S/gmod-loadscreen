@@ -5,14 +5,34 @@ if (window.__LS_INIT__) {
 window.__LS_INIT__ = true;
 
 // ===== Versión =====
-var APP_VERSION = 13.7;
+var APP_VERSION = 13.8;
 console.log('[LS] app.js cargado v' + APP_VERSION);
 
-// ===== Helper cache-busting para imágenes remotas =====
+// ===== Helpers cache-busting y normalización Imgur =====
 function withBust(url){
   if (!/^https?:/i.test(url)) return url;
   return url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now();
 }
+function fixImgur(url){
+  // Convierte https://imgur.com/XXXX.jpg -> https://i.imgur.com/XXXX.jpg
+  try{
+    if (typeof url !== 'string') return url;
+    if (!url.startsWith('http')) return url;
+    var u = new URL(url);
+    if (u.hostname === 'imgur.com') {
+      u.hostname = 'i.imgur.com';
+      // si no tiene extensión (raro en tu lista), forzamos .jpg
+      if (!/\.(jpg|jpeg|png|webp|gif)$/i.test(u.pathname)) {
+        u.pathname = u.pathname.replace(/\/?$/, '.jpg');
+      }
+      return u.toString();
+    }
+    return url;
+  }catch(_){ return url; }
+}
+
+// ===== Detección de entorno =====
+const WEB = !window.gmod; // true cuando corre como sv_loadingurl (HTTP/Pages)
 
 // ===== CONFIG ÚNICO (no dupliques este bloque) =====
 var CONFIG = {
@@ -22,21 +42,21 @@ var CONFIG = {
   // Título del servidor (fijo)
   forceTitle: "Quantum Pulse",
 
-  // Fondos (primero intenta Imgur con cache-bust; fallback local para GMod)
+  // Fondos (primero Imgur + cache-bust; fallback local para GMod)
   slides: [
-    [ withBust('https://imgur.com/u0sY7Kw.jpg'), 'asset://garrysmod/materials/loadscreen/bg9.jpg' ],
-    [ withBust('https://imgur.com/mxKjk67.jpg'), 'asset://garrysmod/materials/loadscreen/bg10.jpg' ],
-    [ withBust('https://imgur.com/UXUWJEf.jpg'), 'asset://garrysmod/materials/loadscreen/bg11.jpg' ],
-    [ withBust('https://imgur.com/XqGC5S3.jpg'), 'asset://garrysmod/materials/loadscreen/bg12.jpg' ],
-    [ withBust('https://imgur.com/2W4STLA.jpg'), 'asset://garrysmod/materials/loadscreen/bg13.jpg' ], 
-    [ withBust('https://imgur.com/9rfDLhM.jpg'), 'asset://garrysmod/materials/loadscreen/bg1.jpg' ],
-    [ withBust('https://imgur.com/en0VJuK.jpg'), 'asset://garrysmod/materials/loadscreen/bg2.jpg' ],
-    [ withBust('https://imgur.com/Nq8cPAb.jpg'), 'asset://garrysmod/materials/loadscreen/bg3.jpg' ],
-    [ withBust('https://imgur.com/inLLgan.jpg'), 'asset://garrysmod/materials/loadscreen/bg4.jpg' ],
-    [ withBust('https://imgur.com/MlbbVX0.jpg'), 'asset://garrysmod/materials/loadscreen/bg5.jpg' ],
-    [ withBust('https://imgur.com/j0PwnEn.jpg'), 'asset://garrysmod/materials/loadscreen/bg6.jpg' ],
-    [ withBust('https://imgur.com/KZU3bUJ.jpg'), 'asset://garrysmod/materials/loadscreen/bg7.jpg' ],
-    [ withBust('https://imgur.com/Q9bBCcd.jpg'), 'asset://garrysmod/materials/loadscreen/bg8.jpg' ],
+    [ withBust(fixImgur('https://imgur.com/u0sY7Kw.jpg')), 'asset://garrysmod/materials/loadscreen/bg9.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/mxKjk67.jpg')), 'asset://garrysmod/materials/loadscreen/bg10.jpg' ],
+    [ withBust(fixImgur('https://imgur.com/UXUWJEf.jpg')), 'asset://garrysmod/materials/loadscreen/bg11.jpg' ],
+    [ withBust(fixImgur('https://imgur.com/XqGC5S3.jpg')), 'asset://garrysmod/materials/loadscreen/bg12.jpg' ],
+    [ withBust(fixImgur('https://imgur.com/2W4STLA.jpg')), 'asset://garrysmod/materials/loadscreen/bg13.jpg' ],
+    [ withBust(fixImgur('https://imgur.com/9rfDLhM.jpg')), 'asset://garrysmod/materials/loadscreen/bg1.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/en0VJuK.jpg')), 'asset://garrysmod/materials/loadscreen/bg2.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/Nq8cPAb.jpg')), 'asset://garrysmod/materials/loadscreen/bg3.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/inLLgan.jpg')), 'asset://garrysmod/materials/loadscreen/bg4.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/MlbbVX0.jpg')), 'asset://garrysmod/materials/loadscreen/bg5.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/j0PwnEn.jpg')), 'asset://garrysmod/materials/loadscreen/bg6.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/KZU3bUJ.jpg')), 'asset://garrysmod/materials/loadscreen/bg7.jpg'  ],
+    [ withBust(fixImgur('https://imgur.com/Q9bBCcd.jpg')), 'asset://garrysmod/materials/loadscreen/bg8.jpg'  ],
   ],
   shuffleSlides: true,
   holdMs: 20000,
@@ -51,23 +71,21 @@ var CONFIG = {
     'Tu presencia vale mucho!'
   ],
 
-// 🎵 Playlist (loop)
-music: {
-  enabled: true,
-  // NOTA: en loadscreen web (sv_loadingurl) hay que servir el audio por HTTP(s)
-  // Subí /sound/loadscreen/music.ogg al mismo repo (Pages)
-  list: (typeof window.gmod === 'undefined')
-    ? ['/sound/loadscreen/music.ogg'] // WEB: archivo del mismo dominio (sin CORS)
-    : [
-        'asset://garrysmod/sound/loadscreen/music.wav', // GMod DHTML local
-        // 'asset://garrysmod/sound/loadscreen/tema2.wav',
-      ],
-  src: (typeof window.gmod === 'undefined')
-    ? '/sound/loadscreen/music.ogg'
-    : 'asset://garrysmod/sound/loadscreen/music.wav',
-  volume: 0.65
-}
-
+  // 🎵 Playlist (loop) — WEB vs GMod
+  music: {
+    enabled: true,
+    list: WEB
+      ? ['/sound/loadscreen/music.ogg'] // WEB: archivo del mismo dominio (sin CORS)
+      : [
+          'asset://garrysmod/sound/loadscreen/music.wav',
+          // 'asset://garrysmod/sound/loadscreen/tema2.wav',
+        ],
+    src: WEB
+      ? '/sound/loadscreen/music.ogg'
+      : 'asset://garrysmod/sound/loadscreen/music.wav',
+    volume: 0.65
+  }
+}; // <= MUY IMPORTANTE: cerrar CONFIG
 
 // ===== CSS variables =====
 var root = document.documentElement;
@@ -109,6 +127,8 @@ function makeSlide(candidates, addKB){
       return;
     }
     var url = candidates[i++];
+    // normalizamos Imgur por si el fallback también fuese remoto
+    url = fixImgur(url);
     var test = new Image();
     test.onload = function(){
       console.log('[LS] OK img', url, test.width + 'x' + test.height);
@@ -234,7 +254,7 @@ _applyTitle();
 // Hacer que todo entre con fade una vez listo el DOM
 document.documentElement.classList.add('is-ready');
 
-// ===== Música (WAV robusto con PLAYLIST) =====
+// ===== Música (playlist con fallback autoplay) =====
 var muteBtn = document.getElementById('mute');
 var audio = document.getElementById('bgm');
 
@@ -242,13 +262,11 @@ var audio = document.getElementById('bgm');
   if (!CONFIG.music.enabled){ if (muteBtn) muteBtn.style.display='none'; return; }
   if (!audio){ console.error('[LS] Falta <audio id="bgm">'); if (muteBtn) muteBtn.style.display='none'; return; }
 
-  // --- Fuentes: usa list si existe; si no, cae a src ---
   var list = Array.isArray(CONFIG.music.list) && CONFIG.music.list.length
     ? CONFIG.music.list.slice()
-    : [ CONFIG.music.src || (audio.getAttribute('src') || 'asset://garrysmod/sound/loadscreen/music.wav') ];
+    : [ CONFIG.music.src || (audio.getAttribute('src') || (WEB ? '/sound/loadscreen/music.ogg' : 'asset://garrysmod/sound/loadscreen/music.wav')) ];
 
   var idx = 0;
-
   function load(i){
     var src = list[i % list.length];
     audio.pause();
@@ -259,54 +277,43 @@ var audio = document.getElementById('bgm');
     audio.load();
     console.log('[LS] Audio src →', src, ' / abs:', audio.src);
   }
-
   function startFrom(i){
     idx = (i % list.length + list.length) % list.length;
     load(idx);
     audio.muted = false;
     audio.volume = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
-    audio.loop = false; // para que haga "ended" y pase al siguiente
+    audio.loop = false; // usamos 'ended' para pasar a la siguiente
     var p = audio.play();
-    if (p && p.catch) p.catch(()=>{ /* autoplay bloqueado; se maneja abajo */ });
+    if (p && p.catch) p.catch(()=>{});
   }
 
-  // Logs útiles
-  audio.addEventListener('loadedmetadata', function(){ console.log('[LS] loadedmetadata OK. duration=', audio.duration); });
-  audio.addEventListener('canplaythrough', function(){ console.log('[LS] canplaythrough'); });
-  audio.addEventListener('error', function(){
-    var e=audio.error, map={1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
-    console.error('[LS] AUDIO ERROR code', e?e.code:'n/a', e?(map[e.code]||'UNKNOWN'):'UNKNOWN', '→', audio.currentSrc || '(sin src)');
-    // Si falla esta pista, intento siguiente
-    idx = (idx + 1) % list.length;
-    load(idx);
-  });
-
-  // Al terminar una pista, pasa a la siguiente
   audio.addEventListener('ended', function(){
     idx = (idx + 1) % list.length;
     startFrom(idx);
   });
+  audio.addEventListener('error', function(){
+    console.warn('[LS] Audio error, intento siguiente pista…');
+    idx = (idx + 1) % list.length;
+    load(idx);
+  });
 
-  // Intento autoplay; si se bloquea, arranca al clic/tecla
   startFrom(0);
   (audio.play() || Promise.reject()).then(()=>{
     audio.muted = false;
-    console.log('[LS] Autoplay OK (playlist)');
+    console.log('[LS] Autoplay OK');
   }).catch(()=>{
-    console.warn('[LS] Autoplay bloqueado — clic/tecla para iniciar playlist');
+    console.warn('[LS] Autoplay bloqueado — clic/tecla para iniciar');
     function kick(){ startFrom(idx); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); }
     window.addEventListener('pointerdown', kick, {once:true});
     window.addEventListener('keydown',     kick, {once:true});
   });
 
-  // Botón Mute/Play
   if (muteBtn){
     muteBtn.addEventListener('click', function(){
       if (audio.paused) {
         var target = (CONFIG.music.volume != null) ? CONFIG.music.volume : 0.65;
         audio.volume = 0.0;
-        var p = audio.play();
-        if (p && p.catch) p.catch(()=>{});
+        var p = audio.play(); if (p && p.catch) p.catch(()=>{});
         var t = setInterval(function(){
           audio.volume = Math.min(target, audio.volume + (target/12));
           if (audio.volume >= target) clearInterval(t);
@@ -325,7 +332,6 @@ var audio = document.getElementById('bgm');
 
 // ===== GMOD bridge =====
 window.onGMOD = function(data){
-  // Título (usa forceTitle si está)
   _applyTitle(data && data.hostname);
 
   var sub = document.getElementById('subtitle');
@@ -358,6 +364,7 @@ window.onGMOD = function(data){
     aimg.src = cvs.toDataURL('image/png');
   }
 };
+
 window.onGMODTick = function(data){
   var t = Math.max(0, Number((data && data.session) || 0));
   var h = Math.floor(t/3600), m = Math.floor((t%3600)/60);
@@ -461,13 +468,3 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t; // ← guardamos sesión
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t); // ← base persistente + sesión
 };
-
-
-
-
-
-
-
-
-
-
