@@ -67,15 +67,20 @@ var CONFIG = {
   ],
 
   // 🎵 Música: WEB usa .ogg y .mp3; GMod usa .wav
-  music: {
-    enabled: true,
-    list: WEB
-      ? ['/sound/loadscreen/music.ogg', '/sound/loadscreen/music.mp3']
-      : ['asset://garrysmod/sound/loadscreen/music.wav'],
-    src: WEB ? '/sound/loadscreen/music.ogg' : 'asset://garrysmod/sound/loadscreen/music.wav',
-    volume: 0.65
-  }
-}; // <= cerrar CONFIG
+const WEB = !window.gmod;
+
+// 🎵 Playlist (loop)
+music: {
+  enabled: true,
+  // En web: servir desde tu host (OGG/MP3). En GMod: usar WAV locales vía asset://
+  list: WEB
+    ? ['/sound/loadscreen/music.ogg', '/sound/loadscreen/music.mp3']
+    : ['asset://garrysmod/sound/loadscreen/music.wav',
+       'asset://garrysmod/sound/loadscreen/tema2.wav'],
+  src: WEB ? '/sound/loadscreen/music.ogg'
+           : 'asset://garrysmod/sound/loadscreen/music.wav',
+  volume: 0.65
+}
 
 // ===== CSS vars =====
 var root = document.documentElement;
@@ -456,3 +461,4 @@ window.onGMODTick = function (data) {
   window.__QP_SESSION_SEC__ = t;
   updateTimeStat((window.__QP_BASE_TOTAL__ || 0) + t);
 };
+
